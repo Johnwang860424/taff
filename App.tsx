@@ -5,7 +5,7 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import DecorativeCircle from './components/DecorativeCircle';
 
-const App: React.FC = () => {
+const App = () => {
   return (
     <Router>
       <div className="relative min-h-screen font-sans selection:bg-accent-gold/30">
