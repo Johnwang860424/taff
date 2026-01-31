@@ -1,26 +1,9 @@
-
-import React from 'react';
-
 const Hero = () => {
   return (
     <div className="flex flex-col md:flex-row h-screen w-full relative">
       
       {/* Left Section: Text & Branding */}
       <div className="w-full md:w-1/2 h-full flex flex-col justify-between p-8 md:p-16 lg:p-24 bg-background-light z-10">
-        
-        {/* Logo Icon */}
-        <div className="flex justify-start items-center mb-12">
-          <svg className="w-12 h-12 text-primary" fill="none" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
-            <path 
-              d="M150 280 Q140 280 135 270 Q120 250 130 230 Q140 210 160 210 Q165 180 190 170 Q220 160 240 180 Q250 170 270 175 Q290 180 295 200 Q315 205 325 220 Q335 240 325 260 Q315 280 290 275 L150 280 Z" 
-              stroke="currentColor" 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              strokeWidth="15"
-            ></path>
-          </svg>
-        </div>
-
         {/* Hero Text */}
         <div className="flex flex-col items-start space-y-6 md:space-y-8 overflow-hidden">
           <p className="text-xs md:text-sm tracking-[0.4em] uppercase text-gray-500 font-sans font-medium">
@@ -29,7 +12,8 @@ const Hero = () => {
           <h1 className="font-serif text-4xl md:text-5xl lg:text-7xl xl:text-8xl leading-[1.1] font-light text-primary max-w-full break-words">
             每一朵 <br/>
             <span className="italic font-normal opacity-80">雲</span><br/>
-            都鑲著糖邊
+            都鑲著糖 <br/>
+            <span className="italic font-normal opacity-80">邊</span><br/>
           </h1>
           <p className="max-w-sm text-gray-500 font-light leading-relaxed text-sm md:text-base">
             感受手工甜點的輕盈口感，傳統工藝與現代創意的完美結合。成立於 2022 年。

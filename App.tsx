@@ -1,9 +1,8 @@
 
-import React from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Hero from './components/Hero';
-import DecorativeCircle from './components/DecorativeCircle';
+import Navbar from '@/components/Navbar';
+import Hero from '@/components/Hero';
+import DecorativeCircle from '@/components/DecorativeCircle';
 
 const App = () => {
   return (

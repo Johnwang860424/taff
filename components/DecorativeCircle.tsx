@@ -1,7 +1,4 @@
-
-import React from 'react';
-
-const DecorativeCircle: React.FC = () => {
+const DecorativeCircle = () => {
   return (
     <div className="relative w-[300px] h-[300px] md:w-[600px] md:h-[600px] opacity-30 md:opacity-40 lg:opacity-60 mix-blend-overlay md:mix-blend-soft-light select-none">
       <svg className="w-full h-full text-white" fill="none" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
