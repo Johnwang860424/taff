@@ -2,6 +2,7 @@
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
+import Footer from '@/components/Footer';
 import DecorativeCircle from '@/components/DecorativeCircle';
 
 const App = () => {
@@ -20,6 +21,8 @@ const App = () => {
             <Route path="/" element={<Hero />} />
           </Routes>
         </main>
+
+        <Footer />
       </div>
     </Router>
   );

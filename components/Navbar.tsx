@@ -4,7 +4,7 @@ import Logo from '@/components/Logo';
 const Navbar = () => {
   return (
     <nav className="fixed top-0 w-full z-50 p-6 flex items-center justify-between">
-      <a href="#" className="text-primary hover:opacity-70 transition-opacity">
+      <a href="/" className="text-primary hover:opacity-70 transition-opacity">
         <Logo size={50}/>
       </a>
 
