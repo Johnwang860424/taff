@@ -13,7 +13,7 @@ const Cart = () => <div className="p-20 pt-32 text-white">購物車 - 敬請期�
 const App = () => {
   return (
     <Router>
-      <div className="relative min-h-screen font-sans selection:bg-accent-gold/30 bg-black text-white">
+      <div className="relative min-h-screen font-sans selection:bg-accent-gold/30 text-white">
         <Navbar />
         
         {/* Decorative central element that bridges both halves */}
