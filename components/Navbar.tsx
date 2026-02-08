@@ -13,8 +13,8 @@ const Navbar = () => {
         {/* Menu items - desktop */}
         <div className="hidden md:flex items-center space-x-10 text-xs md:text-sm tracking-[0.25em] font-medium uppercase mix-blend-difference text-white">
           <Link to="/brand" className="hover:opacity-70">品牌故事</Link>
-          <Link to="/menu" className="hover:opacity-70">美味菜單</Link>
           <Link to="/contact" className="hover:opacity-70">聯絡我們</Link>
+          <Link to="/menu" className="hover:opacity-70">美味菜單</Link>
         </div>
 
         <div className="flex items-center space-x-6 md:ml-10">

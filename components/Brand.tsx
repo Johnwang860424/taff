@@ -2,7 +2,7 @@ const Brand = () => {
   return (
     <main className="flex flex-col md:flex-row min-h-screen w-full relative">
       {/* Left Section: Image */}
-      <div className="w-full md:w-1/2 h-[50vh] md:h-screen relative overflow-hidden order-1 group">
+      <div className="w-full md:w-1/2 shrink-0 min-h-[50vh] relative overflow-hidden order-1 group">
         <div className="absolute inset-0 bg-stone-900/10 transition-opacity duration-700 group-hover:bg-stone-900/0 z-10"></div>
         <img
           alt="甜點師傅專注製作甜點的手部特寫,溫暖光線"
@@ -19,8 +19,9 @@ const Brand = () => {
       </div>
 
       {/* Right Section: Content */}
-      <div className="w-full md:w-1/2 min-h-[50vh] md:h-screen flex flex-col justify-center items-start p-8 md:p-16 lg:p-24 xl:p-32 bg-background-light dark:bg-background-dark relative order-2 overflow-hidden">
+      <div className="w-full md:w-1/2 shrink-0 flex flex-col justify-between p-8 md:p-24 md:py-16 bg-background-light z-10 order-2">
         <div className="z-10 relative max-w-xl">
+          <p className="text-sm tracking-[0.2em] uppercase text-gray-500 dark:text-gray-400 font-sans mb-3">BRAND STORY</p>
           {/* Title */}
           <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-primary dark:text-white mb-8 tracking-widest font-light">
             品牌故事
@@ -56,9 +57,8 @@ const Brand = () => {
           </div>
         </div>
 
-        {/* Vertical text decoration */}
         <div className="absolute bottom-8 right-8 md:bottom-12 md:right-12 text-[10px] tracking-[0.3em] text-primary/30 dark:text-white/20 font-sans hidden md:block writing-vertical-rl">
-          ABOUT US — 01
+          BRAND STORY — 01
         </div>
       </div>
     </main>
