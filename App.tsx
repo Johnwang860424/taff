@@ -3,11 +3,11 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Home from '@/components/Home';
 import Brand from '@/components/Brand';
+import Contact from '@/components/Contact';
 import DecorativeCircle from '@/components/DecorativeCircle';
 
 // Temporary components for menu and contact until they are built
 const Menu = () => <div className="p-20 pt-32 text-white">美味菜單 - 敬請期待</div>;
-const Contact = () => <div className="p-20 pt-32 text-white">聯絡我們 - 敬請期待</div>;
 const Cart = () => <div className="p-20 pt-32 text-white">購物車 - 敬請期待</div>;
 
 const App = () => {
@@ -25,8 +25,8 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/brand" element={<Brand />} />
-            <Route path="/menu" element={<Menu />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/menu" element={<Menu />} />
             <Route path="/cart" element={<Cart />} />
           </Routes>
         </main>
