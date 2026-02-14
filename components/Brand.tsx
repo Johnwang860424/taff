@@ -1,19 +1,23 @@
+import Image from "next/image";
+
 const Brand = () => {
   return (
     <main className="flex flex-col md:flex-row min-h-screen w-full relative">
       {/* Left Section: Image */}
       <div className="w-full md:w-1/2 shrink-0 min-h-[50vh] relative overflow-hidden order-1 group">
         <div className="absolute inset-0 bg-stone-900/10 transition-opacity duration-700 group-hover:bg-stone-900/0 z-10"></div>
-        <img
+        <Image
           alt="甜點師傅專注製作甜點的手部特寫,溫暖光線"
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-105"
           src="https://lh3.googleusercontent.com/aida-public/AB6AXuChmrm-XtfdWCk-xBpsedGGCDHzdygVVgT1y8p2EaPQEBDATPziarlouiUi84rsvjTbTP6a-G7yvJDxkcL2uIa8LhC-IAzJDNGFrf5nz0DXtj7RQuI9ImzYC-YtZTw2hX2gZrHQF1ZiI_CDcajAfevh8rbxfAmK0S8Xr-KEyBLN_8HiZ0NI3r1igOgBiWKjSyWZ8APFqaN4TcrS1mUOgztVwr3P_8Y3M8btUaehln1q9d6crRKeE9a4A9sitEw-iowOM4q_2EzRbw"
+          fill
+          priority
         />
 
         {/* Quote overlay */}
         <div className="absolute bottom-10 left-10 md:bottom-20 md:left-20 z-20 text-white/95 max-w-xs md:max-w-md opacity-0 md:opacity-100 transition-opacity duration-1000 delay-300">
           <p className="font-serif italic text-2xl md:text-3xl leading-relaxed tracking-wide drop-shadow-lg">
-            "Crafting moments of sweetness,<br />one cloud at a time."
+            &quot;Crafting moments of sweetness,<br />one cloud at a time.&quot;
           </p>
         </div>
       </div>

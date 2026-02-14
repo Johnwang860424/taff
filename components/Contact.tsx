@@ -1,3 +1,4 @@
+import Image from "next/image";
 import SocialLinks from "@/components/SocialLinks";
 
 const Contact = () => {
@@ -59,10 +60,11 @@ const Contact = () => {
         {/* Right Panel - Image */}
         <div className="w-full md:w-1/2 h-[50vh] md:h-full relative overflow-hidden order-1 group">
           <div className="absolute inset-0 bg-stone-900/10 transition-opacity duration-700 group-hover:bg-stone-900/0 z-10"></div>
-          <img 
+          <Image 
             alt="極簡風格的甜點工作室內部，柔和的燈光和精緻的糕點" 
             className="absolute inset-0 w-full h-full object-cover transform scale-105" 
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuChmrm-XtfdWCk-xBpsedGGCDHzdygVVgT1y8p2EaPQEBDATPziarlouiUi84rsvjTbTP6a-G7yvJDxkcL2uIa8LhC-IAzJDNGFrf5nz0DXtj7RQuI9ImzYC-YtZTw2hX2gZrHQF1ZiI_CDcajAfevh8rbxfAmK0S8Xr-KEyBLN_8HiZ0NI3r1igOgBiWKjSyWZ8APFqaN4TcrS1mUOgztVwr3P_8Y3M8btUaehln1q9d6crRKeE9a4A9sitEw-iowOM4q_2EzRbw"
+            fill
           />
 
           <div className="absolute bottom-8 right-8 md:bottom-12 md:right-12 text-[10px] tracking-[0.3em] text-primary/30 dark:text-white/20 font-sans hidden md:block writing-vertical-rl">
