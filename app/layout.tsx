@@ -67,7 +67,7 @@ export default function RootLayout({
             <DecorativeCircle />
           </div>
 
-          <main>{children}</main>
+          <div>{children}</div>
         </div>
       </body>
     </html>
