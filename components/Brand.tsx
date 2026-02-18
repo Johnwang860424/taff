@@ -25,7 +25,7 @@ const Brand = () => {
       {/* Right Section: Content */}
       <div className="w-full md:w-1/2 shrink-0 flex flex-col justify-between p-8 md:p-24 md:py-16 bg-background-light z-10 order-2">
         <div className="z-10 relative max-w-xl">
-          <p className="text-sm tracking-[0.2em] uppercase text-gray-500 dark:text-gray-400 font-sans mb-3">BRAND STORY</p>
+          <p className="text-sm tracking-[0.2em] uppercase text-accent-gold font-sans mb-3">BRAND STORY</p>
           {/* Title */}
           <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-primary dark:text-white mb-8 tracking-widest font-light">
             品牌故事
@@ -42,7 +42,7 @@ const Brand = () => {
           </div>
 
           {/* Body text */}
-          <div className="space-y-6 text-primary/75 dark:text-gray-300 font-serif leading-loose text-base md:text-lg text-justify tracking-wide">
+          <div className="space-y-6 text-primary/75 font-serif leading-loose text-base md:text-lg text-justify tracking-wide">
             <p>
               Taff 甜點工作室成立於 2022 年,座落於虎尾的靜謐角落。我們堅持選用最純淨的天然食材,摒棄繁複的化學添加,只為了還原食材本真的風味。
             </p>
@@ -52,7 +52,7 @@ const Brand = () => {
           </div>
 
           {/* Brand signature */}
-          <div className="mt-16 flex items-center space-x-6">
+          <div className="mt-12 flex items-center space-x-6">
             <div className="flex flex-col">
               <span className="font-serif italic text-2xl text-primary dark:text-white">Taff Dessert</span>
               <span className="text-[10px] tracking-[0.25em] uppercase text-accent-gold mt-1">Artisan Studio</span>

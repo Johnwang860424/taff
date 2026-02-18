@@ -27,13 +27,13 @@ const MobileSidebar = ({ open, setOpen }: { open: boolean; setOpen: (open: boole
     >
       <div className="relative w-full h-full bg-background-light shadow-xl flex flex-col ">
         <div className="flex justify-between items-center p-6">
-          <Link href="/" onClick={() => setOpen(false)} className="flex items-center">
+          <Link href="/" onClick={() => setOpen(false)} className="flex items-center text-primary/75">
             <Logo size={50}/>
           </Link>
 
           <button 
             onClick={() => setOpen(false)}
-            className="hover:bg-gray-100 transition-all p-2.5 rounded-full group flex items-center justify-center"
+            className="text-primary/75 hover:bg-gray-100 transition-all p-2.5 rounded-full group flex items-center justify-center"
           >
             <X className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" />
           </button>
