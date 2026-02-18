@@ -1,4 +1,4 @@
-const Logo = ({ color = "currentColor", size = 50 }) => {
+const Logo = ({ size = 50 }) => {
   return (
     <svg
       width={size}
@@ -59,7 +59,7 @@ const Logo = ({ color = "currentColor", size = 50 }) => {
           C172.165039,289.596497 182.005630,294.208221 192.704788,296.537445
           C208.022827,299.872223 223.509552,296.867859 239.834457,295.961090
           Z"
-        stroke={color}
+        stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="13"

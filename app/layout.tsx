@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { Cormorant_Garamond, Montserrat, Noto_Serif_TC, Noto_Sans_TC } from 'next/font/google';
 import './globals.css';
-import Navbar from '@/components/Navbar';
 import DecorativeCircle from '@/components/DecorativeCircle';
+import Navbar from '@/components/Navbar';
 
 const cormorantGaramond = Cormorant_Garamond({
   subsets: ['latin'],

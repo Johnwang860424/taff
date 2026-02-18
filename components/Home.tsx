@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import SocialLinks from "@/components/SocialLinks";
 
 const Home = () => {
@@ -23,14 +24,16 @@ const Home = () => {
 
           <div className="pt-4 md:pt-6 lg:pt-10">
             <button className="group relative inline-flex items-center justify-center px-8 py-3 md:px-10 md:py-4 bg-primary text-white rounded-full transition-all duration-300 hover:shadow-2xl hover:bg-neutral-800">
-              <span className="relative z-10 font-medium tracking-widest text-sm">線上訂購</span>
+              <span className="relative z-10 font-medium tracking-widest text-sm">
+                <Link href="/menu">線上訂購</Link>
+              </span>
             </button>
           </div>
         </div>
       </div>
 
       {/* Social Links */}
-      <div className="fixed bottom-10 left-8 md:left-24 flex items-center space-x-6 text-primary/50 z-20">
+      <div className="hidden md:flex fixed bottom-10 left-8 md:left-24 items-center space-x-6 text-primary/50 z-20">
         <SocialLinks/>
       </div>
 

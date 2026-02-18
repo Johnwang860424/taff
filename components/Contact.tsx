@@ -9,7 +9,7 @@ const Contact = () => {
         {/* Contact Details */}
         <div className="z-10 relative max-w-xl">
           {/* Contact Details */}
-          <p className="text-sm tracking-[0.2em] uppercase text-gray-500 dark:text-gray-400 font-sans mb-3">
+          <p className="text-sm tracking-[0.2em] uppercase text-accent-gold font-sans mb-3">
             CONTACT US
           </p>
           <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-primary dark:text-white mb-8 tracking-widest font-light">
@@ -18,8 +18,15 @@ const Contact = () => {
 
           <div className="w-20 h-[1px] bg-accent-gold mb-10"></div>
 
-          <div className="space-y-12 text-primary/75 dark:text-gray-300 font-serif">
-            
+          <div className="space-y-10 text-primary/75 dark:text-gray-300 font-serif">
+            {/* Service */}
+            <section>
+              <h3 className="text-xs font-sans tracking-[0.15em] text-accent-gold uppercase mb-4">Service</h3>
+              <p className="text-xl md:text-2xl leading-relaxed">
+                預約制甜點、婚禮喜餅、節慶禮盒、企業訂製、Candy Bar
+              </p>
+            </section>
+
             {/* Address */}
             <section>
               <h3 className="text-xs font-sans tracking-[0.15em] text-accent-gold uppercase mb-4">Address</h3>
@@ -35,7 +42,7 @@ const Contact = () => {
             <section>
               <h3 className="text-xs font-sans tracking-[0.15em] text-accent-gold uppercase mb-4">Opening Hours</h3>
               <p className="text-xl md:text-2xl">
-                週一 — 週五 <span className="ml-2 font-sans text-lg">10:00 — 17:00</span>
+                預約制
               </p>
             </section>
 
