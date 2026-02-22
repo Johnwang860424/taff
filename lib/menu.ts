@@ -8,7 +8,7 @@ export interface MenuItem {
 }
 
 export interface MenuData {
-  deliverableItems: MenuItem[];
+  shippableItems: MenuItem[];
   pickupOnlyItems: MenuItem[];
 }
 
@@ -34,7 +34,7 @@ export const getMenuData = unstable_cache(
     const deliverableRows = response.data.valueRanges?.[0].values?.slice(1) || [];
     const pickupOnlyRows = response.data.valueRanges?.[1].values?.slice(1) || [];
 
-    const deliverableItems = deliverableRows.map((row: string[]) => ({
+    const shippableItems = deliverableRows.map((row: string[]) => ({
       name: row[0] || '',
       price: Number(row[1]) || 0,
       img: row[2] || '',
@@ -46,7 +46,7 @@ export const getMenuData = unstable_cache(
       img: row[2] || '',
     }));
 
-    return { deliverableItems, pickupOnlyItems };
+    return { shippableItems, pickupOnlyItems };
   },
   ['menu-data-cache'],
   { revalidate: 3600, tags: ['menu'] }
