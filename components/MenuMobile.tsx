@@ -21,7 +21,7 @@ const MenuMobile = ({ data }: { data: MenuData }) => {
         <div className="text-center mb-4 mt-4">
           <p className="text-sm tracking-[0.2em] uppercase text-accent-gold font-sans mb-3">Seasonal Menu</p>
           {/* Title */}
-          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-primary dark:text-white mb-8 tracking-widest font-light">
+          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-primary mb-8 tracking-widest font-light">
             季節嚴選
           </h1>
 
@@ -35,8 +35,8 @@ const MenuMobile = ({ data }: { data: MenuData }) => {
               onClick={() => setActiveCategory(key)}
               className={`snap-center shrink-0 px-5 py-2 rounded-full text-sm tracking-widest font-medium shadow-sm transition-all active:scale-95 ${
                 activeCategory === key
-                  ? "bg-primary text-white shadow-lg shadow-primary/20 dark:bg-gray-100 dark:text-primary dark:shadow-gray-100/20"
-                  : "bg-white dark:bg-surface-dark text-primary dark:text-gray-200 border border-transparent active:border-gray-200 active:bg-gray-50"
+                  ? "bg-primary text-white shadow-lg shadow-primary/20"
+                  : "bg-white text-primary border border-transparent active:border-gray-200 active:bg-gray-50"
               }`}
             >
               {categoryNames[key]}
@@ -46,17 +46,17 @@ const MenuMobile = ({ data }: { data: MenuData }) => {
 
         <div className="grid grid-cols-1 gap-8 pt-4 pb-12">
           {data[activeCategory]?.map((item, index) => (
-            <div key={index} className="group bg-surface-light dark:bg-surface-dark rounded-2xl overflow-hidden">
+            <div key={index} className="group bg-surface-light rounded-2xl overflow-hidden bg-white">
               <div className="relative h-64 overflow-hidden">
                 <Image alt={item.name} className="object-cover pointer-events-none" src={item.img} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
-                <div className="absolute top-4 right-4 bg-white/90 dark:bg-black/70 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-serif tracking-widest text-primary dark:text-white uppercase">
+                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-serif tracking-widest text-primary uppercase">
                   {activeCategory === "shippableItems" ? "Shippable" : "Pickup"}
                 </div>
               </div>
               <div className="p-6">
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-serif text-2xl text-primary dark:text-white font-medium">{item.name}</h3>
-                  <span className="font-sans text-lg text-accent-brown dark:text-accent-gold font-medium">${item.price}</span>
+                  <h3 className="font-serif text-2xl text-primary font-medium">{item.name}</h3>
+                  <span className="font-sans text-lg text-accent-brown font-medium">${item.price}</span>
                 </div>
                 <button className="w-full mt-4 py-3 bg-accent-gold active:bg-accent-gold/80 active:scale-95 text-white rounded-xl font-medium tracking-widest text-sm transition-colors duration-300 flex items-center justify-center space-x-2">
                   <ShoppingCart />
