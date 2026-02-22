@@ -5,8 +5,8 @@ import { useState } from "react";
 import type { MenuData } from "@/lib/menu";
 import { ShoppingCart } from "lucide-react";
 
-const Menu = ({ data }: { data: MenuData }) => {
-  const firstItem = data.deliverableItems[0];
+const MenuDesktop = ({ data }: { data: MenuData }) => {
+  const firstItem = data.shippableItems[0];
 
   const [currentImage, setCurrentImage] = useState(firstItem?.img);
   const [currentName, setCurrentName] = useState(firstItem?.name);
@@ -32,7 +32,7 @@ const Menu = ({ data }: { data: MenuData }) => {
 
         {/* Featured Label */}
         <div className="absolute bottom-8 left-8 z-20 hidden md:block">
-          <button className="bg-accent-gold hover:bg-accent-gold/80 text-white text-xs px-4 py-2 rounded-sm shadow-md transition-all duration-300 flex items-center gap-1 shrink-0">
+          <button className="bg-accent-gold hover:bg-accent-gold/80 hover:scale-110 hover:shadow-lg active:scale-95 text-white text-xs px-4 py-2 rounded-xl shadow-md transition-all duration-300 flex items-center gap-1 shrink-0">
             <ShoppingCart/>
             加入購物車
           </button>
@@ -54,10 +54,10 @@ const Menu = ({ data }: { data: MenuData }) => {
           <section>
             <h2 className="font-serif text-2xl md:text-3xl text-primary mb-6 pb-2 border-b border-accent-gold inline-block pr-8">
               可宅配
-              <span className="text-xs font-sans tracking-[0.15em] text-accent-gold uppercase ml-2">Deliverable</span>
+              <span className="text-xs font-sans tracking-[0.15em] text-accent-gold uppercase ml-2">Shippable</span>
             </h2>
             <ul className="space-y-4">
-              {data.deliverableItems.map((item, index) => (
+              {data.shippableItems.map((item, index) => (
                 <li
                   key={index}
                   className="group flex justify-between items-baseline text-lg md:text-xl font-light text-gray-800 dark:text-gray-300 hover:text-accent-gold dark:hover:text-accent-gold transition-colors cursor-pointer"
@@ -99,4 +99,4 @@ const Menu = ({ data }: { data: MenuData }) => {
   );
 };
 
-export default Menu;
+export default MenuDesktop;
