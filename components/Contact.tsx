@@ -12,7 +12,7 @@ const Contact = () => {
           <p className="text-sm tracking-[0.2em] uppercase text-accent-gold font-sans mb-3">
             CONTACT US
           </p>
-          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-primary dark:text-white mb-8 tracking-widest font-light">
+          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-primary mb-8 tracking-widest font-light">
             聯絡我們
           </h1>
 

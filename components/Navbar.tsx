@@ -5,9 +5,12 @@ import Logo from '@/components/Logo';
 import { useState } from 'react';
 import MobileSidebar from '@/components/MobileSidebar';
 import { MENU_ITEMS } from '@/constants/menu';
+import { useCart } from '@/context/CartContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { totalItems } = useCart();
+
   return (
     <nav className="fixed top-0 w-full z-50 p-6 flex items-center justify-between">
       <Link href="/" className="text-primary/75 hover:opacity-70 transition-opacity">
@@ -31,7 +34,11 @@ const Navbar = () => {
           {/* Shopping bag icon */}
           <Link href="/cart" className="relative group mix-blend-difference text-primary/75 hover:opacity-70">
             <ShoppingBag size={22} strokeWidth={1.5} />
-            <span className="absolute -top-0.5 -right-0.5 h-2 w-2 bg-red-500 rounded-full border border-background-light"></span>
+            {totalItems > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 h-4 w-4 bg-red-500 rounded-full border border-background-light flex items-center justify-center text-[9px] text-white font-bold leading-none">
+                {totalItems > 9 ? '9+' : totalItems}
+              </span>
+            )}
           </Link>
         </div>
         <MobileSidebar open={isOpen} setOpen={setIsOpen} />
