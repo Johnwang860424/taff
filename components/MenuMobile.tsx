@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import type { MenuData } from "@/lib/menu";
+import type { MenuData, MenuItem } from "@/lib/menu";
 import { ShoppingCart, Check } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 
@@ -19,7 +19,7 @@ const MenuMobile = ({ data }: { data: MenuData }) => {
 
   const categories = Object.keys(data) as Array<keyof MenuData>;
 
-  const handleAddToCart = (item: { name: string; price: number; img: string }) => {
+  const handleAddToCart = (item: MenuItem) => {
     addItem({
       name: item.name,
       price: item.price,

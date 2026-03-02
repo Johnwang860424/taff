@@ -2,28 +2,24 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import type { MenuData } from "@/lib/menu";
+import type { MenuData, MenuItem } from "@/lib/menu";
 import { ShoppingCart, Check } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 
 const MenuDesktop = ({ data }: { data: MenuData }) => {
   const firstItem = data.shippableItems[0];
-  const [currentImage, setCurrentImage] = useState(firstItem?.img);
-  const [currentName, setCurrentName] = useState(firstItem?.name);
   const [currentItem, setCurrentItem] = useState(firstItem);
-  const [currentCategory, setCurrentCategory] = useState<"shippable" | "pickupOnly">("shippable");
+  const [activeCategory, setActiveCategory] = useState<keyof MenuData>("shippableItems");
   const [added, setAdded] = useState(false);
 
   const { addItem } = useCart();
 
   const handleMenuItemHover = (
-    item: { name: string; price: number; img: string },
-    category: "shippable" | "pickupOnly"
+    item: MenuItem,
+    category: keyof MenuData
   ) => {
-    setCurrentImage(item.img);
-    setCurrentName(item.name);
     setCurrentItem(item);
-    setCurrentCategory(category);
+    setActiveCategory(category);
   };
 
   const handleAddToCart = () => {
@@ -32,7 +28,8 @@ const MenuDesktop = ({ data }: { data: MenuData }) => {
       name: currentItem.name,
       price: currentItem.price,
       img: currentItem.img,
-      category: currentCategory,
+      // category: currentCategory,
+      category: activeCategory === "shippableItems" ? "shippable" : "pickupOnly",
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
@@ -43,14 +40,16 @@ const MenuDesktop = ({ data }: { data: MenuData }) => {
       {/* Left Section - Image */}
       <div className="w-full md:w-1/2 shrink-0 min-h-[50vh] relative overflow-hidden order-1 group">
         <div className="absolute inset-0 bg-stone-900/10 transition-opacity duration-700 group-hover:bg-stone-900/0 z-10"></div>
-        <Image
-          key={currentImage}
-          alt={`精美的${currentName}甜點照片`}
-          className="absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-500"
-          src={currentImage}
-          fill
-          sizes="(max-width: 768px) 100vw, 50vw"
-        />
+        {currentItem && (
+          <Image
+            key={currentItem.img}
+            alt={`精美的${currentItem.name}甜點照片`}
+            className="absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-500"
+            src={currentItem.img}
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
+        )}
 
         {/* Add to cart button */}
         <div className="absolute bottom-8 left-8 z-20 hidden md:block">
@@ -102,7 +101,7 @@ const MenuDesktop = ({ data }: { data: MenuData }) => {
                 <li
                   key={index}
                   className="group flex justify-between items-baseline text-lg md:text-xl font-light text-gray-800 dark:text-gray-300 hover:text-accent-gold dark:hover:text-accent-gold transition-colors cursor-pointer"
-                  onMouseEnter={() => handleMenuItemHover(item, "shippable")}
+                  onMouseEnter={() => handleMenuItemHover(item, "shippableItems")}
                 >
                   <span className="font-serif">{item.name}</span>
                   <span className="text-base font-sans text-gray-500 dark:text-gray-500 group-hover:text-accent-gold/80 transition-colors">$ {item.price}</span>
@@ -122,7 +121,7 @@ const MenuDesktop = ({ data }: { data: MenuData }) => {
                 <li
                   key={index}
                   className="group flex justify-between items-baseline text-lg md:text-xl font-light text-gray-800 dark:text-gray-300 hover:text-accent-gold dark:hover:text-accent-gold transition-colors cursor-pointer"
-                  onMouseEnter={() => handleMenuItemHover(item, "pickupOnly")}
+                  onMouseEnter={() => handleMenuItemHover(item, "pickupOnlyItems")}
                 >
                   <span className="font-serif">{item.name}</span>
                   <span className="text-base font-sans text-gray-500 dark:text-gray-500 group-hover:text-accent-gold/80 transition-colors">$ {item.price}</span>
