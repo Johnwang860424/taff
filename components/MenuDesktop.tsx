@@ -2,18 +2,37 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import type { MenuData } from "@/lib/menu";
-import { ShoppingCart } from "lucide-react";
+import type { MenuData, MenuItem } from "@/lib/menu";
+import { ShoppingCart, Check } from "lucide-react";
+import { useCart } from "@/context/CartContext";
 
 const MenuDesktop = ({ data }: { data: MenuData }) => {
   const firstItem = data.shippableItems[0];
+  const [currentItem, setCurrentItem] = useState(firstItem);
+  const [activeCategory, setActiveCategory] = useState<keyof MenuData>("shippableItems");
+  const [added, setAdded] = useState(false);
 
-  const [currentImage, setCurrentImage] = useState(firstItem?.img);
-  const [currentName, setCurrentName] = useState(firstItem?.name);
+  const { addItem } = useCart();
 
-  const handleMenuItemHover = (img: string, name: string) => {
-    setCurrentImage(img);
-    setCurrentName(name);
+  const handleMenuItemHover = (
+    item: MenuItem,
+    category: keyof MenuData
+  ) => {
+    setCurrentItem(item);
+    setActiveCategory(category);
+  };
+
+  const handleAddToCart = () => {
+    if (!currentItem) return;
+    addItem({
+      name: currentItem.name,
+      price: currentItem.price,
+      img: currentItem.img,
+      // category: currentCategory,
+      category: activeCategory === "shippableItems" ? "shippable" : "pickupOnly",
+    });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
   };
 
   return (
@@ -21,20 +40,41 @@ const MenuDesktop = ({ data }: { data: MenuData }) => {
       {/* Left Section - Image */}
       <div className="w-full md:w-1/2 shrink-0 min-h-[50vh] relative overflow-hidden order-1 group">
         <div className="absolute inset-0 bg-stone-900/10 transition-opacity duration-700 group-hover:bg-stone-900/0 z-10"></div>
-        <Image
-          key={currentImage}
-          alt={`精美的${currentName}甜點照片`}
-          className="absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-500"
-          src={currentImage}
-          fill
-          sizes="(max-width: 768px) 100vw, 50vw"
-        />
+        {currentItem && (
+          <Image
+            key={currentItem.img}
+            alt={`精美的${currentItem.name}甜點照片`}
+            className="absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-500"
+            src={currentItem.img}
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
+        )}
 
-        {/* Featured Label */}
+        {/* Add to cart button */}
         <div className="absolute bottom-8 left-8 z-20 hidden md:block">
-          <button className="bg-accent-gold hover:bg-accent-gold/80 hover:scale-110 hover:shadow-lg active:scale-95 text-white text-xs px-4 py-2 rounded-xl shadow-md transition-all duration-300 flex items-center gap-1 shrink-0">
-            <ShoppingCart/>
-            加入購物車
+          <button
+            onClick={handleAddToCart}
+            className={`
+              text-white text-xs px-4 py-2 rounded-xl shadow-md
+              transition-all duration-300 flex items-center gap-2 shrink-0
+              ${added
+                ? "bg-green-500 hover:bg-green-500 scale-105"
+                : "bg-accent-gold hover:bg-accent-gold/80 hover:scale-110 hover:shadow-lg active:scale-95"
+              }
+            `}
+          >
+            {added ? (
+              <>
+                <Check size={16} />
+                已加入購物車
+              </>
+            ) : (
+              <>
+                <ShoppingCart size={16} />
+                加入購物車
+              </>
+            )}
           </button>
         </div>
       </div>
@@ -50,7 +90,7 @@ const MenuDesktop = ({ data }: { data: MenuData }) => {
         </div>
 
         <div className="flex-grow overflow-y-auto pr-4 pb-4 z-10 space-y-12">
-          {/* Tarts Section */}
+          {/* Shippable Section */}
           <section>
             <h2 className="font-serif text-2xl md:text-3xl text-primary mb-6 pb-2 border-b border-accent-gold inline-block pr-8">
               可宅配
@@ -61,7 +101,7 @@ const MenuDesktop = ({ data }: { data: MenuData }) => {
                 <li
                   key={index}
                   className="group flex justify-between items-baseline text-lg md:text-xl font-light text-gray-800 dark:text-gray-300 hover:text-accent-gold dark:hover:text-accent-gold transition-colors cursor-pointer"
-                  onMouseEnter={() => handleMenuItemHover(item.img, item.name)}
+                  onMouseEnter={() => handleMenuItemHover(item, "shippableItems")}
                 >
                   <span className="font-serif">{item.name}</span>
                   <span className="text-base font-sans text-gray-500 dark:text-gray-500 group-hover:text-accent-gold/80 transition-colors">$ {item.price}</span>
@@ -70,7 +110,7 @@ const MenuDesktop = ({ data }: { data: MenuData }) => {
             </ul>
           </section>
 
-          {/* Mousse Section */}
+          {/* Pickup Only Section */}
           <section>
             <h2 className="font-serif text-2xl md:text-3xl text-primary mb-6 pb-2 border-b border-accent-gold inline-block pr-8">
               限自取
@@ -81,7 +121,7 @@ const MenuDesktop = ({ data }: { data: MenuData }) => {
                 <li
                   key={index}
                   className="group flex justify-between items-baseline text-lg md:text-xl font-light text-gray-800 dark:text-gray-300 hover:text-accent-gold dark:hover:text-accent-gold transition-colors cursor-pointer"
-                  onMouseEnter={() => handleMenuItemHover(item.img, item.name)}
+                  onMouseEnter={() => handleMenuItemHover(item, "pickupOnlyItems")}
                 >
                   <span className="font-serif">{item.name}</span>
                   <span className="text-base font-sans text-gray-500 dark:text-gray-500 group-hover:text-accent-gold/80 transition-colors">$ {item.price}</span>

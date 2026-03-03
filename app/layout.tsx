@@ -3,6 +3,7 @@ import { Cormorant_Garamond, Montserrat, Noto_Serif_TC, Noto_Sans_TC } from 'nex
 import './globals.css';
 import DecorativeCircle from '@/components/DecorativeCircle';
 import Navbar from '@/components/Navbar';
+import { CartProvider } from '@/context/CartContext';
 
 const cormorantGaramond = Cormorant_Garamond({
   subsets: ['latin'],
@@ -59,16 +60,18 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
       </head>
       <body className="bg-background-light text-primary antialiased overflow-x-hidden font-sans selection:bg-accent-gold/30">
-        <div className="relative min-h-screen">
-          <Navbar />
-          
-          {/* Decorative central element that bridges both halves */}
-          <div className="fixed inset-0 pointer-events-none flex items-center justify-center z-20 overflow-hidden">
-            <DecorativeCircle />
-          </div>
+        <CartProvider>
+          <div className="relative min-h-screen">
+            <Navbar />
+            
+            {/* Decorative central element that bridges both halves */}
+            <div className="fixed inset-0 pointer-events-none flex items-center justify-center z-20 overflow-hidden">
+              <DecorativeCircle />
+            </div>
 
-          <div>{children}</div>
-        </div>
+            <div>{children}</div>
+          </div>
+        </CartProvider>
       </body>
     </html>
   );
