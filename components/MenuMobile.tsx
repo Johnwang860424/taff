@@ -199,19 +199,25 @@ const MenuMobile = ({ data }: { data: MenuData }) => {
         </div>
       </div>
 
-      {/* Bottom Sheet */}
-      {isSheetOpen && selectedItem && (
-        <div
-          className="fixed inset-0 z-50 bg-black/35 backdrop-blur-[1px]"
-          onClick={closeSheet}
-        >
-          <div
-            className="absolute bottom-0 inset-x-0 bg-white rounded-t-2xl shadow-2xl px-6 pt-4 pb-10 max-h-[85vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-            onTouchStart={onTouchStart}
-            onTouchMove={onTouchMove}
-            onTouchEnd={onTouchEnd}
-          >
+      {/* Bottom Sheet Backdrop */}
+      <div
+        className={`fixed inset-0 z-50 bg-black/35 backdrop-blur-[1px] transition-opacity duration-300 ${
+          isSheetOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={closeSheet}
+      />
+
+      {/* Bottom Sheet Panel */}
+      <div
+        className={`fixed bottom-0 inset-x-0 z-50 bg-white rounded-t-2xl shadow-2xl px-6 pt-4 pb-10 max-h-[85vh] overflow-y-auto transition-transform duration-300 ease-out ${
+          isSheetOpen ? "translate-y-0" : "translate-y-full"
+        }`}
+        onClick={(e) => e.stopPropagation()}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+      >
+      {selectedItem && (<>
             <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-4" />
 
             <div className="flex items-start justify-between gap-4 mb-6">
@@ -305,9 +311,8 @@ const MenuMobile = ({ data }: { data: MenuData }) => {
             >
               確認加入
             </button>
-          </div>
-        </div>
-      )}
+          </>)}
+      </div>
     </main>
   );
 };

@@ -2,9 +2,9 @@ import { google } from "googleapis";
 import { unstable_cache } from "next/cache";
 
 export interface FlavorSchedule {
-  flavor: string[];  // 逗號分隔多口味（同價格同日期）
-  price: number;     // 此口味群組的單價
-  dates: string[];   // 可取貨日期（YYYY-MM-DD）
+  flavor: string[]; // 逗號分隔多口味（同價格同日期）
+  price: number; // 此口味群組的單價
+  dates: string[]; // 可取貨日期（YYYY-MM-DD）
 }
 
 export interface MenuItem {
@@ -19,13 +19,15 @@ export interface MenuData {
 }
 
 const parseCsv = (cell: string): string[] =>
-  cell.split(",").map((s) => s.trim()).filter(Boolean);
+  cell
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
 
 const buildMenuItems = (rows: string[][]): MenuItem[] => {
   let lastItemName = "";
   let lastImg = "";
 
-  // 先用 Map 依 name 聚合，保留插入順序
   const map = new Map<string, MenuItem>();
 
   for (const row of rows) {
