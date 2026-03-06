@@ -1,11 +1,6 @@
 import { NextResponse } from "next/server";
 import { google } from "googleapis";
 
-// 修正 private_key 中的 \n 被當成字面量（常見於 .env）
-const fixPrivateKey = (key: string | undefined): string | undefined => {
-  if (!key) return key;
-  return key.replace(/\\n/g, "\n").replace(/\\r/g, "\r");
-};
 
 export async function POST(req: Request) {
   try {
@@ -36,7 +31,7 @@ export async function POST(req: Request) {
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-        private_key: fixPrivateKey(process.env.GOOGLE_PRIVATE_KEY),
+        private_key: process.env.GOOGLE_PRIVATE_KEY,
       },
       scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
@@ -50,8 +45,7 @@ export async function POST(req: Request) {
         { status: 500 },
       );
     }
-
-    // 從試算表取得第一個工作表的實際名稱（避免手動設定錯誤）
+   
     const meta = await sheets.spreadsheets.get({ spreadsheetId });
     const firstSheet = meta.data.sheets?.[0]?.properties?.title;
     if (!firstSheet) {

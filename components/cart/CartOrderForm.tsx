@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { z } from "zod";
 import { useCart } from "@/context/CartContext";
 
 type OrderForm = {
@@ -10,6 +11,18 @@ type OrderForm = {
   address: string;
   note: string;
 };
+
+const getOrderFormSchema = (deliveryMethod: "pickup" | "shippable") =>
+  z.object({
+    name: z.string().min(1, "請輸入姓名"),
+    phone: z.string().min(1, "請輸入電話").regex(/^09\d{8}$/, "電話格式錯誤，請輸入 09 開頭的 10 碼手機號碼"),
+    email: z.string().min(1, "請輸入 Email").email("Email 格式錯誤"),
+    address:
+      deliveryMethod === "shippable"
+        ? z.string().min(1, "請輸入收件地址")
+        : z.string(),
+    note: z.string(),
+  });
 
 type Props = {
   deliveryMethod: "pickup" | "shippable";
@@ -79,23 +92,20 @@ const CartOrderForm = ({
   ) => setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
   const validate = (): boolean => {
+    const schema = getOrderFormSchema(deliveryMethod);
+    const result = schema.safeParse(form);
+    if (result.success) {
+      setErrors({});
+      return true;
+    }
+    const fieldErrors = result.error.flatten().fieldErrors as Partial<
+      Record<keyof OrderForm, string[]>
+    >;
     const newErrors: Partial<Record<keyof OrderForm, string>> = {};
-    if (!form.name.trim()) newErrors.name = "請輸入姓名";
-    if (!form.phone.trim()) {
-      newErrors.phone = "請輸入電話";
-    } else if (!/^09\d{8}$/.test(form.phone.trim())) {
-      newErrors.phone = "電話格式錯誤，請輸入 09 開頭的 10 碼手機號碼";
-    }
-    if (!form.email.trim()) {
-      newErrors.email = "請輸入 Email";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
-      newErrors.email = "Email 格式錯誤";
-    }
-    if (deliveryMethod === "shippable" && !form.address.trim()) {
-      newErrors.address = "請輸入收件地址";
-    }
+    for (const [k, v] of Object.entries(fieldErrors))
+      if (v?.[0]) newErrors[k as keyof OrderForm] = v[0];
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return false;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
