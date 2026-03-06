@@ -1,5 +1,5 @@
 
-import Brand from '@/components/Brand';
+import Brand from '@/components/brand/Brand';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
