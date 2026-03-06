@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useCart } from "@/context/CartContext";
 
 type OrderForm = {
   name: string;
@@ -18,25 +19,64 @@ type Props = {
 
 const FIELDS = (deliveryMethod: "pickup" | "shippable") =>
   [
-    { name: "name", label: "姓名", type: "text", placeholder: "請輸入姓名", required: true },
-    { name: "phone", label: "電話", type: "tel", placeholder: "例：0912345678", required: true },
-    { name: "email", label: "Email", type: "email", placeholder: "例：example@mail.com", required: true },
+    {
+      name: "name",
+      label: "姓名",
+      type: "text",
+      placeholder: "請輸入姓名",
+      required: true,
+    },
+    {
+      name: "phone",
+      label: "電話",
+      type: "tel",
+      placeholder: "例：0912345678",
+      required: true,
+    },
+    {
+      name: "email",
+      label: "Email",
+      type: "email",
+      placeholder: "例：example@mail.com",
+      required: true,
+    },
     {
       name: "address",
       label: deliveryMethod === "pickup" ? "地址（選填）" : "地址",
       type: "text",
-      placeholder: deliveryMethod === "pickup" ? "自取可免填" : "請輸入收件地址",
+      placeholder:
+        deliveryMethod === "pickup" ? "自取可免填" : "請輸入收件地址",
       required: deliveryMethod === "shippable",
     },
-  ] as Array<{ name: keyof OrderForm; label: string; type: string; placeholder: string; required: boolean }>;
+  ] as Array<{
+    name: keyof OrderForm;
+    label: string;
+    type: string;
+    placeholder: string;
+    required: boolean;
+  }>;
 
-const CartOrderForm = ({ deliveryMethod, clearCart, onSubmitSuccess }: Props) => {
+const CartOrderForm = ({
+  deliveryMethod,
+  clearCart,
+  onSubmitSuccess,
+}: Props) => {
+  const { items } = useCart();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [form, setForm] = useState<OrderForm>({ name: "", phone: "", email: "", address: "", note: "" });
-  const [errors, setErrors] = useState<Partial<Record<keyof OrderForm, string>>>({});
+  const [form, setForm] = useState<OrderForm>({
+    name: "",
+    phone: "",
+    email: "",
+    address: "",
+    note: "",
+  });
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof OrderForm, string>>
+  >({});
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
   const validate = (): boolean => {
     const newErrors: Partial<Record<keyof OrderForm, string>> = {};
@@ -62,11 +102,29 @@ const CartOrderForm = ({ deliveryMethod, clearCart, onSubmitSuccess }: Props) =>
     e.preventDefault();
     if (!validate()) return;
     setIsSubmitting(true);
-    // await fetch('/api/order', { method: 'POST', body: JSON.stringify({ form, deliveryMethod }) })
-    await new Promise((r) => setTimeout(r, 800));
-    clearCart();
-    onSubmitSuccess();
-    setIsSubmitting(false);
+    try {
+      const res = await fetch("/api/order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ form, deliveryMethod, items }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.detail ?? data.error ?? "Submit failed");
+      }
+
+      clearCart();
+      onSubmitSuccess();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "送出失敗，請稍後再試。";
+      console.error(err);
+      alert(`送出失敗：${msg}`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -74,7 +132,9 @@ const CartOrderForm = ({ deliveryMethod, clearCart, onSubmitSuccess }: Props) =>
       <h2 className="font-serif text-2xl md:text-3xl text-primary mb-6 pb-2 border-b border-accent-gold inline-block pr-8">
         {deliveryMethod === "pickup" ? "取件資訊" : "收件資訊"}
         <span className="text-xs font-sans tracking-[0.15em] text-accent-gold uppercase ml-2">
-          {deliveryMethod === "pickup" ? "Pickup Information" : "Shipping Information"}
+          {deliveryMethod === "pickup"
+            ? "Pickup Information"
+            : "Shipping Information"}
         </span>
       </h2>
 
@@ -91,7 +151,8 @@ const CartOrderForm = ({ deliveryMethod, clearCart, onSubmitSuccess }: Props) =>
               value={form[field.name]}
               onChange={(e) => {
                 handleChange(e);
-                if (errors[field.name]) setErrors((prev) => ({ ...prev, [field.name]: undefined }));
+                if (errors[field.name])
+                  setErrors((prev) => ({ ...prev, [field.name]: undefined }));
               }}
               placeholder={field.placeholder}
               className={`border-b ${
@@ -99,7 +160,9 @@ const CartOrderForm = ({ deliveryMethod, clearCart, onSubmitSuccess }: Props) =>
               } bg-transparent py-3 outline-none focus:border-accent-gold transition-colors text-base md:text-lg font-sans text-gray-800 placeholder:text-gray-400`}
             />
             {errors[field.name] && (
-              <p className="text-xs md:text-sm text-red-400 font-sans">{errors[field.name]}</p>
+              <p className="text-xs md:text-sm text-red-400 font-sans">
+                {errors[field.name]}
+              </p>
             )}
           </div>
         ))}
