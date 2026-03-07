@@ -12,12 +12,15 @@ const Brand = () => {
           src="https://lh3.googleusercontent.com/aida-public/AB6AXuChmrm-XtfdWCk-xBpsedGGCDHzdygVVgT1y8p2EaPQEBDATPziarlouiUi84rsvjTbTP6a-G7yvJDxkcL2uIa8LhC-IAzJDNGFrf5nz0DXtj7RQuI9ImzYC-YtZTw2hX2gZrHQF1ZiI_CDcajAfevh8rbxfAmK0S8Xr-KEyBLN_8HiZ0NI3r1igOgBiWKjSyWZ8APFqaN4TcrS1mUOgztVwr3P_8Y3M8btUaehln1q9d6crRKeE9a4A9sitEw-iowOM4q_2EzRbw"
           fill
           priority
+          loading="eager"
         />
 
         {/* Quote overlay */}
         <div className="absolute bottom-10 left-10 md:bottom-20 md:left-20 z-20 text-white/95 max-w-xs md:max-w-md opacity-0 md:opacity-100 transition-opacity duration-1000 delay-300">
           <p className="font-serif italic text-2xl md:text-3xl leading-relaxed tracking-wide drop-shadow-lg">
-            &quot;Crafting moments of sweetness,<br />one cloud at a time.&quot;
+            &quot;Crafting moments of sweetness,
+            <br />
+            one cloud at a time.&quot;
           </p>
         </div>
       </div>
@@ -25,7 +28,9 @@ const Brand = () => {
       {/* Right Section: Content */}
       <div className="w-full md:w-1/2 shrink-0 flex flex-col justify-between p-8 md:p-24 md:py-16 bg-background-light z-10 order-2">
         <div className="z-10 relative max-w-xl">
-          <p className="text-sm tracking-[0.2em] uppercase text-accent-gold font-sans mb-3">BRAND STORY</p>
+          <p className="text-sm tracking-[0.2em] uppercase text-accent-gold font-sans mb-3">
+            BRAND STORY
+          </p>
           {/* Title */}
           <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-primary dark:text-white mb-8 tracking-widest font-light">
             品牌故事
@@ -44,7 +49,8 @@ const Brand = () => {
           {/* Body text */}
           <div className="space-y-6 text-primary/75 font-serif leading-loose text-base md:text-lg text-justify tracking-wide">
             <p>
-              Taff 甜點工作室成立於 2022 年,座落於虎尾的靜謐角落。我們堅持選用最純淨的天然食材,摒棄繁複的化學添加,只為了還原食材本真的風味。
+              Taff 甜點工作室成立於 2022
+              年,座落於虎尾的靜謐角落。我們堅持選用最純淨的天然食材,摒棄繁複的化學添加,只為了還原食材本真的風味。
             </p>
             <p>
               從麵粉的篩選到奶油的打發,每一個步驟都由職人雙手細心呵護。如同天空中的雲朵千變萬化,我們的甜點也致力於探索口感的無限可能,帶給您味蕾上最溫暖的擁抱。
@@ -54,8 +60,12 @@ const Brand = () => {
           {/* Brand signature */}
           <div className="mt-12 flex items-center space-x-6">
             <div className="flex flex-col">
-              <span className="font-serif italic text-2xl text-primary dark:text-white">Taff Dessert</span>
-              <span className="text-[10px] tracking-[0.25em] uppercase text-accent-gold mt-1">Artisan Studio</span>
+              <span className="font-serif italic text-2xl text-primary dark:text-white">
+                Taff Dessert
+              </span>
+              <span className="text-[10px] tracking-[0.25em] uppercase text-accent-gold mt-1">
+                Artisan Studio
+              </span>
             </div>
             <span className="h-px w-16 bg-primary/10 dark:bg-white/10"></span>
           </div>

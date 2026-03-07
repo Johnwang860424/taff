@@ -7,14 +7,22 @@ export type CartItem = {
   price: number;
   img: string;
   category: "shippable" | "pickupOnly";
+  flavor: string;
+  pickupDate: string;
   quantity: number;
 };
+
+export const cartItemKey = (
+  name: string,
+  flavor: string,
+  pickupDate: string
+) => `${name}||${flavor}||${pickupDate}`;
 
 type CartContextType = {
   items: CartItem[];
   addItem: (item: Omit<CartItem, "quantity">) => void;
-  removeItem: (name: string) => void;
-  updateQuantity: (name: string, quantity: number) => void;
+  removeItem: (name: string, flavor: string, pickupDate: string) => void;
+  updateQuantity: (name: string, flavor: string, pickupDate: string, quantity: number) => void;
   clearCart: () => void;
   totalItems: number;
   totalPrice: number;
@@ -26,30 +34,53 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
 
   const addItem = useCallback((item: Omit<CartItem, "quantity">) => {
+    const key = cartItemKey(item.name, item.flavor, item.pickupDate);
     setItems((prev) => {
-      const existing = prev.find((i) => i.name === item.name);
+      const existing = prev.find(
+        (i) => cartItemKey(i.name, i.flavor, i.pickupDate) === key
+      );
       if (existing) {
         return prev.map((i) =>
-          i.name === item.name ? { ...i, quantity: i.quantity + 1 } : i
+          cartItemKey(i.name, i.flavor, i.pickupDate) === key
+            ? { ...i, quantity: i.quantity + 1 }
+            : i
         );
       }
       return [...prev, { ...item, quantity: 1 }];
     });
   }, []);
 
-  const removeItem = useCallback((name: string) => {
-    setItems((prev) => prev.filter((i) => i.name !== name));
-  }, []);
-
-  const updateQuantity = useCallback((name: string, quantity: number) => {
-    if (quantity <= 0) {
-      setItems((prev) => prev.filter((i) => i.name !== name));
-    } else {
+  const removeItem = useCallback(
+    (name: string, flavor: string, pickupDate: string) => {
+      const key = cartItemKey(name, flavor, pickupDate);
       setItems((prev) =>
-        prev.map((i) => (i.name === name ? { ...i, quantity } : i))
+        prev.filter((i) => cartItemKey(i.name, i.flavor, i.pickupDate) !== key)
       );
-    }
-  }, []);
+    },
+    []
+  );
+
+  const updateQuantity = useCallback(
+    (name: string, flavor: string, pickupDate: string, quantity: number) => {
+      const key = cartItemKey(name, flavor, pickupDate);
+      if (quantity <= 0) {
+        setItems((prev) =>
+          prev.filter(
+            (i) => cartItemKey(i.name, i.flavor, i.pickupDate) !== key
+          )
+        );
+      } else {
+        setItems((prev) =>
+          prev.map((i) =>
+            cartItemKey(i.name, i.flavor, i.pickupDate) === key
+              ? { ...i, quantity }
+              : i
+          )
+        );
+      }
+    },
+    []
+  );
 
   const clearCart = useCallback(() => setItems([]), []);
 

@@ -1,5 +1,5 @@
-import MenuDesktop from '@/components/MenuDesktop';
-import MenuMobile from '@/components/MenuMobile';
+import MenuDesktop from '@/components/menu/MenuDesktop';
+import MenuMobile from '@/components/menu/MenuMobile';
 import type { Metadata } from 'next';
 import { getMenuData } from '@/lib/menu';
 
