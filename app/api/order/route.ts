@@ -45,48 +45,48 @@ export async function POST(req: Request) {
         { status: 500 },
       );
     }
-   
-    const meta = await sheets.spreadsheets.get({ spreadsheetId });
-    const firstSheet = meta.data.sheets?.[0]?.properties?.title;
-    if (!firstSheet) {
-      return NextResponse.json(
-        { error: "Spreadsheet has no sheets" },
-        { status: 500 },
-      );
-    }
-
-    const range =
-      /^[A-Za-z0-9_]+$/.test(firstSheet)
-        ? `${firstSheet}!A:N`
-        : `'${firstSheet.replace(/'/g, "''")}'!A:N`;
 
     const now = new Date().toISOString();
+    const groupedData: Record<string, any[][]> = {};
 
-    const values = items.map((item) => [
-      now, // 建立時間
-      form.name,
-      form.phone,
-      form.email,
-      form.address,
-      deliveryMethod,
-      item.category,
-      item.name,
-      item.flavor,
-      item.pickupDate,
-      item.quantity,
-      item.price,
-      item.price * item.quantity,
-      form.note,
-    ]);
+    items.forEach((item) => {
+      const dateObj = new Date(item.pickupDate);
+      const year = dateObj.getFullYear();
+      const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const sheetName = `${year}-${month}`;
 
-    await sheets.spreadsheets.values.append({
-      spreadsheetId,
-      range,
-      valueInputOption: "USER_ENTERED",
-      requestBody: {
-        values,
-      },
+      if (!groupedData[sheetName]) {
+        groupedData[sheetName] = [];
+      }
+
+      groupedData[sheetName].push([
+        now, // 建立時間
+        form.name,
+        form.phone,
+        form.email,
+        form.address,
+        deliveryMethod,
+        item.category,
+        item.name,
+        item.flavor,
+        item.pickupDate,
+        item.quantity,
+        item.price,
+        item.price * item.quantity,
+        form.note,
+      ]);
     });
+
+    for (const [sheetName, values] of Object.entries(groupedData)) {
+      await sheets.spreadsheets.values.append({
+        spreadsheetId,
+        range: `'${sheetName}'!A:N`,
+        valueInputOption: "USER_ENTERED",
+        requestBody: {
+          values,
+        },
+      });
+    }
 
     return NextResponse.json({ ok: true });
   } catch (error) {
