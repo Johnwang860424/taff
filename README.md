@@ -10,7 +10,7 @@
 - `POST /api/order` 可將訂單寫入 Google Sheets
 - 菜單資料從 Google Sheets 讀取，並做快取與定時更新
 
-## 技術棧
+## 技術架構
 
 - `Next.js 16`
 - `React 19`
