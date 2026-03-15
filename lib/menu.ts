@@ -95,5 +95,5 @@ export const getMenuData = unstable_cache(
     return { shippableItems, pickupOnlyItems };
   },
   ["menu-data-cache-v5"],
-  { revalidate: 3600, tags: ["menu"] },
+  { revalidate: false, tags: ["menu"] },
 );
