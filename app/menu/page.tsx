@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: '探索我們精心製作的甜點系列。',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function Page() {
   const data = await getMenuData();
   return (

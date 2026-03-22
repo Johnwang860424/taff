@@ -9,10 +9,10 @@ const Brand = () => {
         <Image
           alt="甜點師傅專注製作甜點的手部特寫,溫暖光線"
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-105"
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuChmrm-XtfdWCk-xBpsedGGCDHzdygVVgT1y8p2EaPQEBDATPziarlouiUi84rsvjTbTP6a-G7yvJDxkcL2uIa8LhC-IAzJDNGFrf5nz0DXtj7RQuI9ImzYC-YtZTw2hX2gZrHQF1ZiI_CDcajAfevh8rbxfAmK0S8Xr-KEyBLN_8HiZ0NI3r1igOgBiWKjSyWZ8APFqaN4TcrS1mUOgztVwr3P_8Y3M8btUaehln1q9d6crRKeE9a4A9sitEw-iowOM4q_2EzRbw"
+          src={`https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/taff/site/brand-story`}
           fill
           priority
-          loading="eager"
+          unoptimized
         />
 
         {/* Quote overlay */}
