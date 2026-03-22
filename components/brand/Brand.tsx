@@ -1,6 +1,8 @@
 import Image from "next/image";
+import { getCloudinaryUrl } from "@/lib/cloudinary";
 
-const Brand = () => {
+const Brand = async () => {
+  const imgSrc = await getCloudinaryUrl("taff/site/brand-story");
   return (
     <main className="flex flex-col md:flex-row min-h-screen w-full relative">
       {/* Left Section: Image */}
@@ -9,7 +11,7 @@ const Brand = () => {
         <Image
           alt="甜點師傅專注製作甜點的手部特寫,溫暖光線"
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-105"
-          src={`https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/taff/site/brand-story`}
+          src={imgSrc}
           fill
           priority
           unoptimized
