@@ -56,10 +56,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh-TW" className={`${cormorantGaramond.variable} ${montserrat.variable} ${notoSerifTC.variable} ${notoSansTC.variable}`}>
-      <head>
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-      </head>
-      <body className="bg-background-light text-primary antialiased overflow-x-hidden font-sans selection:bg-accent-gold/30">
+<body className="bg-background-light text-primary antialiased overflow-x-hidden font-sans selection:bg-accent-gold/30">
         <CartProvider>
           <div className="relative min-h-screen">
             <Navbar />
