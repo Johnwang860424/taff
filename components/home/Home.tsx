@@ -1,8 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import SocialLinks from "@/components/SocialLinks";
+import { getCloudinaryUrl } from "@/lib/cloudinary";
 
-const Home = () => {
+const Home = async () => {
+  const imgSrc = await getCloudinaryUrl("taff/site/home");
   return (
     <main className="flex flex-col md:flex-row min-h-screen w-full relative">
       {/* Left Section: Text & Branding */}
@@ -46,7 +48,7 @@ const Home = () => {
         <Image
           alt="Artisan dessert pastries on a stand"
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-105"
-          src={`https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/taff/site/home`}
+          src={imgSrc}
           fill
           priority
           unoptimized

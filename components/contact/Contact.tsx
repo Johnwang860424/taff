@@ -1,7 +1,9 @@
 import Image from "next/image";
 import SocialLinks from "@/components/SocialLinks";
+import { getCloudinaryUrl } from "@/lib/cloudinary";
 
-const Contact = () => {
+const Contact = async () => {
+  const imgSrc = await getCloudinaryUrl("taff/site/contact");
   return (
     <main className="flex flex-col md:flex-row min-h-screen w-full relative">
       {/* Left Section - Contact Information */}
@@ -75,7 +77,7 @@ const Contact = () => {
         <Image
           alt="極簡風格的甜點工作室內部，柔和的燈光和精緻的糕點"
           className="absolute inset-0 w-full h-full object-cover transform scale-105"
-          src={`https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/taff/site/contact`}
+          src={imgSrc}
           fill
           priority
           unoptimized

@@ -46,7 +46,6 @@ const MobileSidebar = ({ open, setOpen }: { open: boolean; setOpen: (open: boole
               href={item.href} 
               onClick={() => setOpen(false)}
               className="group flex flex-col items-center text-center transition-all duration-300 hover:scale-105"
-              // className="group flex flex-col items-center justify-center relative"
             >
               <span className="text-3xl font-serif text-primary mb-1 group-hover:text-primary/80 transition-colors">{item.zh}</span>
               <span className="text-[10px] tracking-[0.3em] uppercase text-gray-400 font-sans group-hover:text-gray-500 transition-colors">{item.en}</span>

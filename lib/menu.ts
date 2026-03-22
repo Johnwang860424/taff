@@ -124,7 +124,7 @@ const buildMenuData = (
 };
 
 // ── 靜態資料快取（Products + Variants）────────────────────────
-// 品項與口味變動少，手動透過 /api/revalidate-menu 失效
+// 品項與口味變動少，手動透過 /api/revalidate 失效
 
 const getStaticData = unstable_cache(
   async () => {
