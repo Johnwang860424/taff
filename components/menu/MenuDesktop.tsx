@@ -99,6 +99,7 @@ const MenuDesktop = ({ data }: { data: MenuData }) => {
             src={currentItem.img}
             fill
             sizes="(max-width: 768px) 100vw, 50vw"
+            priority
           />
         )}
         <div className="absolute bottom-8 left-8 z-20 hidden md:block">

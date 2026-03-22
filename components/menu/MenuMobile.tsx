@@ -151,6 +151,7 @@ const MenuMobile = ({ data }: { data: MenuData }) => {
               >
                 <div className="relative h-64 overflow-hidden">
                   <Image
+                    priority
                     alt={item.name}
                     className="object-cover pointer-events-none"
                     src={item.img}
@@ -202,7 +203,9 @@ const MenuMobile = ({ data }: { data: MenuData }) => {
       {/* Bottom Sheet Backdrop */}
       <div
         className={`fixed inset-0 z-50 bg-black/35 backdrop-blur-[1px] transition-opacity duration-300 ${
-          isSheetOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          isSheetOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
         }`}
         onClick={closeSheet}
       />
@@ -217,7 +220,8 @@ const MenuMobile = ({ data }: { data: MenuData }) => {
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
-      {selectedItem && (<>
+        {selectedItem && (
+          <>
             <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-4" />
 
             <div className="flex items-start justify-between gap-4 mb-6">
@@ -311,7 +315,8 @@ const MenuMobile = ({ data }: { data: MenuData }) => {
             >
               確認加入
             </button>
-          </>)}
+          </>
+        )}
       </div>
     </main>
   );

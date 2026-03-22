@@ -2,8 +2,8 @@ import { google } from "googleapis";
 import { unstable_cache } from "next/cache";
 
 export interface FlavorSchedule {
-  flavor: string[]; // 逗號分隔多口味（同價格同日期）
-  price: number; // 此口味群組的單價
+  flavor: string[]; // 口味名稱（單一口味包在陣列中）
+  price: number; // 此口味的單價
   dates: string[]; // 可取貨日期（YYYY-MM-DD）
 }
 
@@ -18,55 +18,116 @@ export interface MenuData {
   pickupOnlyItems: MenuItem[];
 }
 
-const parseCsv = (cell: string): string[] =>
-  cell
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
+// ── 內部 raw 介面 ──────────────────────────────────────────────
 
-const buildMenuItems = (rows: string[][]): MenuItem[] => {
-  let lastItemName = "";
-  let lastImg = "";
+interface RawProduct {
+  id: string;
+  name: string;
+  imageUrl: string;
+  description: string;
+  category: string; // "宅配" | "自取"
+}
 
-  const map = new Map<string, MenuItem>();
+interface RawVariant {
+  id: string;
+  productId: string;
+  flavorName: string;
+  price: number;
+}
 
-  for (const row of rows) {
-    const rawName = (row[0] || "").trim();
-    const name = rawName || lastItemName;
-    if (!name) continue;
-    lastItemName = name;
+interface RawInventory {
+  variantId: string;
+  date: string;
+  stock: number;
+}
 
-    const price = Number(row[1]) || 0;
+// ── Row parsers ────────────────────────────────────────────────
 
-    const rawImg = (row[2] || "").trim();
-    const img = rawImg || lastImg;
-    if (rawImg) lastImg = rawImg;
+const parseProducts = (rows: string[][]): RawProduct[] =>
+  rows.slice(1).map((r) => ({
+    id: (r[0] || "").trim(),
+    name: (r[1] || "").trim(),
+    imageUrl: (r[2] || "").trim(),
+    description: (r[3] || "").trim(),
+    category: (r[4] || "").trim(),
+  }));
 
-    const flavors = parseCsv(row[3] || "");
-    const dates = parseCsv(row[4] || "");
+const parseVariants = (rows: string[][]): RawVariant[] =>
+  rows.slice(1).map((r) => ({
+    id: (r[0] || "").trim(),
+    productId: (r[1] || "").trim(),
+    flavorName: (r[2] || "").trim(),
+    price: Number(r[3]) || 0,
+  }));
 
-    const existing = map.get(name);
-    if (existing) {
-      // 同名品項：更新圖片（若本列有），追加口味排程
-      if (rawImg) existing.img = img;
-      if (flavors.length > 0) {
-        existing.flavorSchedules.push({ flavor: flavors, price, dates });
-      }
-    } else {
-      map.set(name, {
-        name,
-        img,
-        flavorSchedules:
-          flavors.length > 0 ? [{ flavor: flavors, price, dates }] : [],
-      });
+const parseInventory = (rows: string[][]): RawInventory[] =>
+  rows.slice(1).map((r) => ({
+    variantId: (r[0] || "").trim(),
+    date: (r[1] || "").trim(),
+    stock: Number(r[2]) || 0,
+  }));
+
+// ── 組裝 MenuData ──────────────────────────────────────────────
+
+const isDateExpired = (dateStr: string) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return new Date(dateStr) < today;
+};
+
+const buildMenuData = (
+  products: RawProduct[],
+  variants: RawVariant[],
+  inventory: RawInventory[],
+): MenuData => {
+  const shippableItems: MenuItem[] = [];
+  const pickupOnlyItems: MenuItem[] = [];
+
+  for (const product of products) {
+    if (!product.id || !product.name) continue;
+
+    const productVariants = variants.filter((v) => v.productId === product.id);
+
+    const flavorSchedules: FlavorSchedule[] = productVariants
+      .map((variant) => {
+        const dates = inventory
+          .filter(
+            (inv) =>
+              inv.variantId === variant.id &&
+              inv.stock > 0 &&
+              !isDateExpired(inv.date),
+          )
+          .map((inv) => inv.date);
+
+        return {
+          flavor: [variant.flavorName],
+          price: variant.price,
+          dates,
+        };
+      })
+      .filter((fs) => fs.flavor[0]); // 過濾掉口味名稱為空的 variant
+
+    const menuItem: MenuItem = {
+      name: product.name,
+      img: product.imageUrl,
+      flavorSchedules,
+    };
+
+    if (product.category === "宅配") {
+      shippableItems.push(menuItem);
+    } else if (product.category === "自取") {
+      pickupOnlyItems.push(menuItem);
     }
   }
 
-  return Array.from(map.values());
+  return { shippableItems, pickupOnlyItems };
 };
 
-export const getMenuData = unstable_cache(
-  async (): Promise<MenuData> => {
+// ── 靜態資料快取（Products + Variants）────────────────────────
+// 品項與口味變動少，手動透過 /api/revalidate-menu 失效
+
+const getStaticData = unstable_cache(
+  async () => {
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
@@ -76,24 +137,50 @@ export const getMenuData = unstable_cache(
     });
 
     const sheets = google.sheets({ version: "v4", auth });
-    const range = ["可宅配!A:E", "限自取!A:E"];
     const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
 
     const response = await sheets.spreadsheets.values.batchGet({
       spreadsheetId,
-      ranges: range,
+      ranges: ["Products!A:E", "Variants!A:D"],
     });
 
-    const deliverableRows =
-      response.data.valueRanges?.[0].values?.slice(1) || [];
-    const pickupOnlyRows =
-      response.data.valueRanges?.[1].values?.slice(1) || [];
+    const [productRows, variantRows] = response.data.valueRanges?.map(
+      (vr) => vr.values ?? [],
+    ) ?? [[], []];
 
-    const shippableItems = buildMenuItems(deliverableRows);
-    const pickupOnlyItems = buildMenuItems(pickupOnlyRows);
-
-    return { shippableItems, pickupOnlyItems };
+    return {
+      products: parseProducts(productRows),
+      variants: parseVariants(variantRows),
+    };
   },
-  ["menu-data-cache-v5"],
+  ["menu-static-cache-v1"],
   { revalidate: false, tags: ["menu"] },
 );
+
+// ── 對外 API：每次請求都取得即時庫存 ──────────────────────────
+
+export const getMenuData = async (): Promise<MenuData> => {
+  const auth = new google.auth.GoogleAuth({
+    credentials: {
+      client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+      private_key: process.env.GOOGLE_PRIVATE_KEY,
+    },
+    scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
+  });
+
+  const sheets = google.sheets({ version: "v4", auth });
+  const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
+
+  const [staticData, inventoryResponse] = await Promise.all([
+    getStaticData(),
+    sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: "Inventory!A:C",
+    }),
+  ]);
+
+  const inventoryRows = inventoryResponse.data.values ?? [];
+  const inventory = parseInventory(inventoryRows);
+
+  return buildMenuData(staticData.products, staticData.variants, inventory);
+};

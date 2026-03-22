@@ -6,11 +6,21 @@ import { cartItemKey } from "@/context/CartContext";
 type Props = {
   items: CartItem[];
   totalPrice: number;
-  updateQuantity: (name: string, flavor: string, pickupDate: string, quantity: number) => void;
+  updateQuantity: (
+    name: string,
+    flavor: string,
+    pickupDate: string,
+    quantity: number,
+  ) => void;
   removeItem: (name: string, flavor: string, pickupDate: string) => void;
 };
 
-const CartItemList = ({ items, totalPrice, updateQuantity, removeItem }: Props) => (
+const CartItemList = ({
+  items,
+  totalPrice,
+  updateQuantity,
+  removeItem,
+}: Props) => (
   <section>
     <div className="divide-y divide-primary/10">
       {items.map((item) => (
@@ -21,6 +31,7 @@ const CartItemList = ({ items, totalPrice, updateQuantity, removeItem }: Props) 
           {item.img && (
             <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0">
               <Image
+                priority
                 src={item.img}
                 alt={item.name}
                 fill
@@ -45,12 +56,21 @@ const CartItemList = ({ items, totalPrice, updateQuantity, removeItem }: Props) 
                 {item.pickupDate}
               </span>
             </div>
-            <p className="text-sm text-gray-500 font-sans mt-1">$ {item.price}</p>
+            <p className="text-sm text-gray-500 font-sans mt-1">
+              $ {item.price}
+            </p>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
             <button
-              onClick={() => updateQuantity(item.name, item.flavor, item.pickupDate, item.quantity - 1)}
+              onClick={() =>
+                updateQuantity(
+                  item.name,
+                  item.flavor,
+                  item.pickupDate,
+                  item.quantity - 1,
+                )
+              }
               className="w-7 h-7 border border-gray-300 rounded-full flex items-center justify-center text-gray-500 md:hover:border-accent-gold md:hover:text-accent-gold transition-colors active:scale-95"
               aria-label="減少數量"
             >
@@ -60,7 +80,14 @@ const CartItemList = ({ items, totalPrice, updateQuantity, removeItem }: Props) 
               {item.quantity}
             </span>
             <button
-              onClick={() => updateQuantity(item.name, item.flavor, item.pickupDate, item.quantity + 1)}
+              onClick={() =>
+                updateQuantity(
+                  item.name,
+                  item.flavor,
+                  item.pickupDate,
+                  item.quantity + 1,
+                )
+              }
               className="w-7 h-7 border border-gray-300 rounded-full flex items-center justify-center text-gray-500 md:hover:border-accent-gold md:hover:text-accent-gold transition-colors active:scale-95"
               aria-label="增加數量"
             >
