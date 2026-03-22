@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useContext, useState, useCallback, useEffect } from "react";
 
 export type CartItem = {
   name: string;
@@ -28,10 +28,33 @@ type CartContextType = {
   totalPrice: number;
 };
 
+const CART_STORAGE_KEY = "taff_cart";
+
+const loadCart = (): CartItem[] => {
+  try {
+    const raw = localStorage.getItem(CART_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed: CartItem[] = JSON.parse(raw);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return parsed.filter((item) => new Date(item.pickupDate) >= today);
+  } catch {
+    return [];
+  }
+};
+
 const CartContext = createContext<CartContextType | null>(null);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+
+  useEffect(() => {
+    setItems(loadCart());
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+  }, [items]);
 
   const addItem = useCallback((item: Omit<CartItem, "quantity">) => {
     const key = cartItemKey(item.name, item.flavor, item.pickupDate);
