@@ -31,7 +31,6 @@ const CartItemList = ({
           {item.img && (
             <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0">
               <Image
-                priority
                 src={item.img}
                 alt={item.name}
                 fill

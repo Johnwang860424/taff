@@ -28,11 +28,12 @@ const Home = async () => {
           </p>
 
           <div className="pt-4 md:pt-6 lg:pt-10">
-            <button className="group relative inline-flex items-center justify-center px-8 py-3 md:px-10 md:py-4 bg-primary text-white rounded-full transition-all duration-300 hover:shadow-2xl hover:bg-neutral-800">
-              <span className="relative z-10 font-medium tracking-widest text-sm">
-                <Link href="/menu">線上訂購</Link>
-              </span>
-            </button>
+            <Link
+              href="/menu"
+              className="inline-flex items-center justify-center px-8 py-3 md:px-10 md:py-4 bg-primary text-white rounded-full transition-all duration-300 hover:shadow-2xl hover:bg-neutral-800 font-medium tracking-widest text-sm"
+            >
+              線上訂購
+            </Link>
           </div>
         </div>
       </div>
@@ -51,7 +52,7 @@ const Home = async () => {
           src={imgSrc}
           fill
           priority
-          unoptimized
+          sizes="(max-width: 768px) 100vw, 50vw"
         />
       </div>
 

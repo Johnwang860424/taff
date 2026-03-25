@@ -2,100 +2,42 @@
 
 import Image from "next/image";
 import { useState, useRef } from "react";
-import type { MenuData, MenuItem } from "@/lib/menu";
-import { ShoppingCart, Check, X } from "lucide-react";
-import { useCart, cartItemKey } from "@/context/CartContext";
+import type { MenuData } from "@/lib/menu-utils";
+import { getPriceDisplay } from "@/lib/menu-utils";
+import { ShoppingCart, Check } from "lucide-react";
+import { cartItemKey } from "@/context/CartContext";
+import { useMenuItemSelection } from "@/hooks/useMenuItemSelection";
+import { AddToCartModalContent } from "./AddToCartModal";
 
-const today = new Date();
-today.setHours(0, 0, 0, 0);
-
-const isDateExpired = (dateStr: string) => new Date(dateStr) < today;
-
-const getPriceDisplay = (item: MenuItem): string => {
-  const prices = item.flavorSchedules
-    .map((fs) => fs.price)
-    .filter((p) => p > 0);
-  if (prices.length === 0) return "$ —";
-  const min = Math.min(...prices);
-  const max = Math.max(...prices);
-  return min === max ? `$ ${min}` : `$${min} 起`;
+const CATEGORY_NAMES: Record<keyof MenuData, string> = {
+  shippableItems: "可宅配",
+  pickupOnlyItems: "限自取",
 };
 
 const MenuMobile = ({ data }: { data: MenuData }) => {
   const [activeCategory, setActiveCategory] =
     useState<keyof MenuData>("shippableItems");
-  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
-  const [selectedItemCategory, setSelectedItemCategory] =
-    useState<keyof MenuData>("shippableItems");
-  const [selectedFlavor, setSelectedFlavor] = useState("");
-  const [selectedPickupDate, setSelectedPickupDate] = useState("");
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [addedKey, setAddedKey] = useState<string | null>(null);
 
-  const { addItem } = useCart();
+  const {
+    selectedItem,
+    selectedFlavor,
+    selectedPickupDate,
+    isModalOpen,
+    addedKey,
+    flavorOptions,
+    currentPrice,
+    selectedFlavorDates,
+    openModal,
+    closeModal,
+    handleConfirm,
+    selectFlavor,
+    setSelectedPickupDate,
+  } = useMenuItemSelection();
+
   const touchStartY = useRef(0);
   const touchDeltaY = useRef(0);
 
-  const categoryNames: Record<keyof MenuData, string> = {
-    shippableItems: "可宅配",
-    pickupOnlyItems: "限自取",
-  };
-
   const categories = Object.keys(data) as Array<keyof MenuData>;
-
-  const flavorOptions = [
-    ...new Set(selectedItem?.flavorSchedules.flatMap((fs) => fs.flavor) || []),
-  ];
-
-  const selectedSchedule = selectedItem?.flavorSchedules.find((fs) =>
-    fs.flavor.includes(selectedFlavor),
-  );
-
-  const currentPrice = selectedSchedule?.price ?? null;
-
-  const selectedFlavorDates = (selectedSchedule?.dates ?? []).filter(
-    (d) => !isDateExpired(d),
-  );
-
-  const openSheet = (item: MenuItem, category: keyof MenuData) => {
-    const options = [
-      ...new Set(item.flavorSchedules.flatMap((fs) => fs.flavor)),
-    ];
-    setSelectedItem(item);
-    setSelectedItemCategory(category);
-    setSelectedFlavor(options.length === 1 ? options[0] : "");
-    setSelectedPickupDate("");
-    setIsSheetOpen(true);
-  };
-
-  const closeSheet = () => setIsSheetOpen(false);
-
-  const handleConfirm = () => {
-    if (
-      !selectedItem ||
-      !selectedFlavor ||
-      !selectedPickupDate ||
-      currentPrice === null
-    )
-      return;
-    const key = cartItemKey(
-      selectedItem.name,
-      selectedFlavor,
-      selectedPickupDate,
-    );
-    addItem({
-      name: selectedItem.name,
-      price: currentPrice,
-      img: selectedItem.img,
-      category:
-        selectedItemCategory === "shippableItems" ? "shippable" : "pickupOnly",
-      flavor: selectedFlavor,
-      pickupDate: selectedPickupDate,
-    });
-    setAddedKey(key);
-    setTimeout(() => setAddedKey(null), 1500);
-    closeSheet();
-  };
 
   const onTouchStart = (e: React.TouchEvent) => {
     touchStartY.current = e.touches[0].clientY;
@@ -107,7 +49,7 @@ const MenuMobile = ({ data }: { data: MenuData }) => {
   };
 
   const onTouchEnd = () => {
-    if (touchDeltaY.current > 80) closeSheet();
+    if (touchDeltaY.current > 80) closeModal();
     touchDeltaY.current = 0;
   };
 
@@ -135,18 +77,18 @@ const MenuMobile = ({ data }: { data: MenuData }) => {
                   : "bg-white text-primary border border-transparent active:border-gray-200 active:bg-gray-50"
               }`}
             >
-              {categoryNames[key]}
+              {CATEGORY_NAMES[key]}
             </button>
           ))}
         </div>
 
         <div className="grid grid-cols-1 gap-8 pt-4 pb-12">
-          {data[activeCategory]?.map((item, index) => {
-            const itemPrefix = `${item.name}||`;
+          {data[activeCategory]?.map((item) => {
+            const itemPrefix = `${item.name}::`;
             const isAdded = addedKey?.startsWith(itemPrefix) ?? false;
             return (
               <div
-                key={index}
+                key={item.name}
                 className="group bg-surface-light rounded-2xl overflow-hidden bg-white"
               >
                 <div className="relative h-64 overflow-hidden">
@@ -174,7 +116,7 @@ const MenuMobile = ({ data }: { data: MenuData }) => {
                     </span>
                   </div>
                   <button
-                    onClick={() => openSheet(item, activeCategory)}
+                    onClick={() => openModal(item, activeCategory)}
                     className={`w-full mt-4 py-3 text-white rounded-xl font-medium tracking-widest text-sm transition-all duration-300 flex items-center justify-center space-x-2 active:scale-95 ${
                       isAdded
                         ? "bg-green-500"
@@ -203,17 +145,17 @@ const MenuMobile = ({ data }: { data: MenuData }) => {
       {/* Bottom Sheet Backdrop */}
       <div
         className={`fixed inset-0 z-50 bg-black/35 backdrop-blur-[1px] transition-opacity duration-300 ${
-          isSheetOpen
+          isModalOpen
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
         }`}
-        onClick={closeSheet}
+        onClick={closeModal}
       />
 
       {/* Bottom Sheet Panel */}
       <div
         className={`fixed bottom-0 inset-x-0 z-50 bg-white rounded-t-2xl shadow-2xl px-6 pt-4 pb-10 max-h-[85vh] overflow-y-auto transition-transform duration-300 ease-out ${
-          isSheetOpen ? "translate-y-0" : "translate-y-full"
+          isModalOpen ? "translate-y-0" : "translate-y-full"
         }`}
         onClick={(e) => e.stopPropagation()}
         onTouchStart={onTouchStart}
@@ -224,88 +166,19 @@ const MenuMobile = ({ data }: { data: MenuData }) => {
           <>
             <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-4" />
 
-            <div className="flex items-start justify-between gap-4 mb-6">
-              <div>
-                <p className="text-xs tracking-[0.2em] uppercase text-accent-gold font-sans mb-1">
-                  Add To Cart
-                </p>
-                <h3 className="font-serif text-2xl text-primary">
-                  {selectedItem.name}
-                </h3>
-                <p className="font-sans text-sm text-gray-500 mt-1">
-                  {currentPrice !== null
-                    ? `$ ${currentPrice}`
-                    : getPriceDisplay(selectedItem)}
-                </p>
-              </div>
-              <button
-                onClick={closeSheet}
-                className="h-9 w-9 rounded-full border border-black/15 flex items-center justify-center text-gray-500"
-                aria-label="關閉"
-              >
-                <X size={18} />
-              </button>
-            </div>
-
             <div className="mb-6">
-              <p className="text-sm font-sans tracking-[0.15em] text-gray-700 mb-3">
-                口味
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {flavorOptions.length > 0 ? (
-                  flavorOptions.map((flavor) => (
-                    <button
-                      key={flavor}
-                      onClick={() => {
-                        setSelectedFlavor(flavor);
-                        setSelectedPickupDate("");
-                      }}
-                      className={`px-4 py-2 rounded-lg border text-sm font-sans transition-colors ${
-                        selectedFlavor === flavor
-                          ? "border-primary bg-primary text-white"
-                          : "border-black/30 text-primary"
-                      }`}
-                    >
-                      {flavor}
-                    </button>
-                  ))
-                ) : (
-                  <p className="text-sm text-gray-400 font-sans">
-                    此商品尚未設定口味
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="mb-8">
-              <p className="text-sm font-sans tracking-[0.15em] text-gray-700 mb-3">
-                取貨日期
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {!selectedFlavor ? (
-                  <p className="text-sm text-gray-400 font-sans">
-                    請先選擇口味
-                  </p>
-                ) : selectedFlavorDates.length > 0 ? (
-                  selectedFlavorDates.map((date) => (
-                    <button
-                      key={date}
-                      onClick={() => setSelectedPickupDate(date)}
-                      className={`px-4 py-2 rounded-lg border text-sm font-sans transition-colors ${
-                        selectedPickupDate === date
-                          ? "border-primary bg-primary text-white"
-                          : "border-black/30 text-primary"
-                      }`}
-                    >
-                      {date}
-                    </button>
-                  ))
-                ) : (
-                  <p className="text-sm text-gray-400 font-sans">
-                    此口味目前無可取貨日期
-                  </p>
-                )}
-              </div>
+              <AddToCartModalContent
+                item={selectedItem}
+                currentPrice={currentPrice}
+                flavorOptions={flavorOptions}
+                selectedFlavor={selectedFlavor}
+                selectedFlavorDates={selectedFlavorDates}
+                selectedPickupDate={selectedPickupDate}
+                onSelectFlavor={selectFlavor}
+                onSelectDate={setSelectedPickupDate}
+                onConfirm={handleConfirm}
+                onClose={closeModal}
+              />
             </div>
 
             <button

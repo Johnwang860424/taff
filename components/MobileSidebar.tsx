@@ -1,25 +1,15 @@
-import { useEffect } from "react";
 import Link from "next/link";
 import Logo from '@/components/Logo';
 import SocialLinks from "@/components/SocialLinks";
 import { X } from 'lucide-react';
 import { MENU_ITEMS } from '@/constants/menu';
+import { useBodyOverflow } from '@/hooks/useBodyOverflow';
 
 const MobileSidebar = ({ open, setOpen }: { open: boolean; setOpen: (open: boolean) => void }) => {
-  useEffect(() => {
-    if (open) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [open]);
+  useBodyOverflow(open);
 
   return (
-    <div 
+    <div
       className={`
         fixed inset-0 flex z-auto transition-all duration-300
         ${open ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"}
@@ -31,7 +21,7 @@ const MobileSidebar = ({ open, setOpen }: { open: boolean; setOpen: (open: boole
             <Logo size={50}/>
           </Link>
 
-          <button 
+          <button
             onClick={() => setOpen(false)}
             className="text-primary/75 hover:bg-gray-100 transition-all p-2.5 rounded-full group flex items-center justify-center"
           >
@@ -41,9 +31,9 @@ const MobileSidebar = ({ open, setOpen }: { open: boolean; setOpen: (open: boole
 
         <nav className="flex flex-col gap-10 items-center justify-center flex-1">
           {MENU_ITEMS.map((item) => (
-            <Link 
+            <Link
               key={item.href}
-              href={item.href} 
+              href={item.href}
               onClick={() => setOpen(false)}
               className="group flex flex-col items-center text-center transition-all duration-300 hover:scale-105"
             >

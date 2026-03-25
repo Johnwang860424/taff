@@ -1,22 +1,9 @@
-import { google } from "googleapis";
 import { unstable_cache } from "next/cache";
-
-export interface FlavorSchedule {
-  flavor: string[]; // 口味名稱（單一口味包在陣列中）
-  price: number; // 此口味的單價
-  dates: string[]; // 可取貨日期（YYYY-MM-DD）
-}
-
-export interface MenuItem {
-  name: string;
-  img: string;
-  flavorSchedules: FlavorSchedule[];
-}
-
-export interface MenuData {
-  shippableItems: MenuItem[];
-  pickupOnlyItems: MenuItem[];
-}
+import { getReadonlySheets } from "./sheets-client";
+export type { FlavorSchedule, MenuItem, MenuData } from "./menu-utils";
+export { isDateExpired, getPriceDisplay } from "./menu-utils";
+import { isDateExpired } from "./menu-utils";
+import type { FlavorSchedule, MenuData, MenuItem } from "@/lib/menu-utils";
 
 // ── 內部 raw 介面 ──────────────────────────────────────────────
 
@@ -69,12 +56,6 @@ const parseInventory = (rows: string[][]): RawInventory[] =>
 
 // ── 組裝 MenuData ──────────────────────────────────────────────
 
-const isDateExpired = (dateStr: string) => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return new Date(dateStr) < today;
-};
-
 const buildMenuData = (
   products: RawProduct[],
   variants: RawVariant[],
@@ -105,7 +86,7 @@ const buildMenuData = (
           dates,
         };
       })
-      .filter((fs) => fs.flavor[0]); // 過濾掉口味名稱為空的 variant
+      .filter((fs) => fs.flavor[0]);
 
     const menuItem: MenuItem = {
       name: product.name,
@@ -124,19 +105,10 @@ const buildMenuData = (
 };
 
 // ── 靜態資料快取（Products + Variants）────────────────────────
-// 品項與口味變動少，手動透過 /api/revalidate 失效
 
 const getStaticData = unstable_cache(
   async () => {
-    const auth = new google.auth.GoogleAuth({
-      credentials: {
-        client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-        private_key: process.env.GOOGLE_PRIVATE_KEY,
-      },
-      scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
-    });
-
-    const sheets = google.sheets({ version: "v4", auth });
+    const sheets = getReadonlySheets();
     const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
 
     const response = await sheets.spreadsheets.values.batchGet({
@@ -160,15 +132,7 @@ const getStaticData = unstable_cache(
 // ── 對外 API：每次請求都取得即時庫存 ──────────────────────────
 
 export const getMenuData = async (): Promise<MenuData> => {
-  const auth = new google.auth.GoogleAuth({
-    credentials: {
-      client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-      private_key: process.env.GOOGLE_PRIVATE_KEY,
-    },
-    scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
-  });
-
-  const sheets = google.sheets({ version: "v4", auth });
+  const sheets = getReadonlySheets();
   const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
 
   const [staticData, inventoryResponse] = await Promise.all([
