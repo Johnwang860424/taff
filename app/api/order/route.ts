@@ -1,32 +1,39 @@
 import { NextResponse } from "next/server";
 import { google } from "googleapis";
+import { z } from "zod";
+
+const orderBodySchema = z.object({
+  form: z.object({
+    name: z.string().min(1),
+    phone: z.string().min(1),
+    address: z.string(),
+    note: z.string(),
+    facebook: z.string().optional().default(""),
+    instagram: z.string().optional().default(""),
+  }),
+  deliveryMethod: z.enum(["pickup", "shippable"]),
+  items: z
+    .array(
+      z.object({
+        name: z.string().min(1),
+        flavor: z.string().min(1),
+        pickupDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+        quantity: z.number().int().min(1),
+        price: z.number().min(0),
+        category: z.enum(["pickupOnly", "shippable"]),
+      }),
+    )
+    .min(1),
+});
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { form, deliveryMethod, items } = body as {
-      form: {
-        name: string;
-        phone: string;
-        address: string;
-        note: string;
-        facebook?: string;
-        instagram?: string;
-      };
-      deliveryMethod: "pickup" | "shippable";
-      items: Array<{
-        name: string;
-        flavor: string;
-        pickupDate: string;
-        quantity: number;
-        price: number;
-        category: "pickupOnly" | "shippable";
-      }>;
-    };
-
-    if (!items || items.length === 0) {
-      return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
+    const parsed = orderBodySchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     }
+    const { form, deliveryMethod, items } = parsed.data;
 
     const auth = new google.auth.GoogleAuth({
       credentials: {
@@ -113,6 +120,18 @@ export async function POST(req: Request) {
       );
     }
 
+    // ── 先扣減庫存（避免超賣：扣減失敗不寫訂單；訂單寫失敗庫存可由管理員還原）──
+    await Promise.all(
+      deductions.map(({ sheetRow, newStock }) =>
+        sheets.spreadsheets.values.update({
+          spreadsheetId: menuSpreadsheetId,
+          range: `Inventory!C${sheetRow}`,
+          valueInputOption: "RAW",
+          requestBody: { values: [[newStock]] },
+        }),
+      ),
+    );
+
     // ── 寫入訂單 ──────────────────────────────────────────────
     const now = new Date().toISOString();
     const groupedData: Record<string, unknown[][]> = {};
@@ -162,18 +181,6 @@ export async function POST(req: Request) {
         requestBody: { values },
       });
     }
-
-    // ── 扣減庫存 ──────────────────────────────────────────────
-    await Promise.all(
-      deductions.map(({ sheetRow, newStock }) =>
-        sheets.spreadsheets.values.update({
-          spreadsheetId: menuSpreadsheetId,
-          range: `Inventory!C${sheetRow}`,
-          valueInputOption: "RAW",
-          requestBody: { values: [[newStock]] },
-        }),
-      ),
-    );
 
     return NextResponse.json({ ok: true });
   } catch (error) {

@@ -2,24 +2,10 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import type { MenuData, MenuItem } from "@/lib/menu";
+import type { MenuData, MenuItem } from "@/lib/menu-utils";
+import { isDateExpired, getPriceDisplay } from "@/lib/menu-utils";
 import { ShoppingCart, Check, X } from "lucide-react";
 import { useCart } from "@/context/CartContext";
-
-const today = new Date();
-today.setHours(0, 0, 0, 0);
-
-const isDateExpired = (dateStr: string) => new Date(dateStr) < today;
-
-const getPriceDisplay = (item: MenuItem): string => {
-  const prices = item.flavorSchedules
-    .map((fs) => fs.price)
-    .filter((p) => p > 0);
-  if (prices.length === 0) return "$ —";
-  const min = Math.min(...prices);
-  const max = Math.max(...prices);
-  return min === max ? `$ ${min}` : `$${min} 起`;
-};
 
 const MenuDesktop = ({ data }: { data: MenuData }) => {
   const firstItem = data.shippableItems[0];
@@ -146,9 +132,9 @@ const MenuDesktop = ({ data }: { data: MenuData }) => {
               </span>
             </h2>
             <ul className="space-y-4">
-              {data.shippableItems.map((item, index) => (
+              {data.shippableItems.map((item) => (
                 <li
-                  key={index}
+                  key={item.name}
                   className={`group flex justify-between items-baseline text-lg md:text-xl font-light transition-colors cursor-pointer ${
                     currentItem?.name === item.name &&
                     activeCategory === "shippableItems"
@@ -177,9 +163,9 @@ const MenuDesktop = ({ data }: { data: MenuData }) => {
               </span>
             </h2>
             <ul className="space-y-4">
-              {data.pickupOnlyItems.map((item, index) => (
+              {data.pickupOnlyItems.map((item) => (
                 <li
-                  key={index}
+                  key={item.name}
                   className={`group flex justify-between items-baseline text-lg md:text-xl font-light transition-colors cursor-pointer ${
                     currentItem?.name === item.name &&
                     activeCategory === "pickupOnlyItems"
@@ -201,10 +187,11 @@ const MenuDesktop = ({ data }: { data: MenuData }) => {
           </section>
         </div>
 
-        <div className="absolute bottom-8 right-8 md:bottom-12 md:right-12 text-[10px] tracking-[0.3em] text-primary/30 dark:text-white/20 font-sans hidden md:block writing-vertical-rl">
+        <div className="absolute bottom-8 right-8 md:bottom-12 md:right-12 text-[10px] tracking-[0.3em] text-primary/30 dark:text-white/20 font-sans hidden md:block text-vertical">
           SEASONAL SELECTION — 03
         </div>
       </div>
+
 
       {/* Modal */}
       <div

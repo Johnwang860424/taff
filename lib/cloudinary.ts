@@ -12,6 +12,10 @@ export async function getCloudinaryUrl(publicId: string): Promise<string> {
     },
   );
 
+  if (!res.ok) {
+    return `https://res.cloudinary.com/${cloudName}/image/upload/${publicId}`;
+  }
+
   const data = await res.json();
   return `https://res.cloudinary.com/${cloudName}/image/upload/v${data.version}/${publicId}`;
 }
