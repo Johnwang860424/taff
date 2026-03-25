@@ -16,7 +16,7 @@ export const cartItemKey = (
   name: string,
   flavor: string,
   pickupDate: string
-) => `${name}||${flavor}||${pickupDate}`;
+) => `${name}::${flavor}::${pickupDate}`;
 
 type CartContextType = {
   items: CartItem[];

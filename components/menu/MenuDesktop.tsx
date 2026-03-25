@@ -1,75 +1,40 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
 import type { MenuData, MenuItem } from "@/lib/menu-utils";
-import { isDateExpired, getPriceDisplay } from "@/lib/menu-utils";
-import { ShoppingCart, Check, X } from "lucide-react";
-import { useCart } from "@/context/CartContext";
+import { getPriceDisplay } from "@/lib/menu-utils";
+import { ShoppingCart, Check } from "lucide-react";
+import { useMenuItemSelection } from "@/hooks/useMenuItemSelection";
+import { AddToCartModalContent } from "./AddToCartModal";
 
 const MenuDesktop = ({ data }: { data: MenuData }) => {
-  const firstItem = data.shippableItems[0];
-  const [currentItem, setCurrentItem] = useState(firstItem);
-  const [activeCategory, setActiveCategory] =
-    useState<keyof MenuData>("shippableItems");
-  const [added, setAdded] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedFlavor, setSelectedFlavor] = useState("");
-  const [selectedPickupDate, setSelectedPickupDate] = useState("");
+  const {
+    selectedItem,
+    selectedCategory,
+    selectedFlavor,
+    selectedPickupDate,
+    isModalOpen,
+    addedKey,
+    flavorOptions,
+    currentPrice,
+    selectedFlavorDates,
+    openModal,
+    closeModal,
+    handleConfirm,
+    selectFlavor,
+    setSelectedPickupDate,
+    setSelectedItem,
+    setSelectedCategory,
+  } = useMenuItemSelection();
 
-  const { addItem } = useCart();
-
-  const flavorOptions = [
-    ...new Set(currentItem?.flavorSchedules.flatMap((fs) => fs.flavor) || []),
-  ];
-
-  const selectedSchedule = currentItem?.flavorSchedules.find((fs) =>
-    fs.flavor.includes(selectedFlavor),
-  );
-
-  const currentPrice = selectedSchedule?.price ?? null;
-
-  const selectedFlavorDates = (selectedSchedule?.dates ?? []).filter(
-    (d) => !isDateExpired(d),
-  );
+  // Initialize with first item on mount
+  const currentItem = selectedItem ?? data.shippableItems[0];
+  const activeCategory = selectedItem ? selectedCategory : "shippableItems";
+  const isAdded = addedKey !== null;
 
   const handleMenuItemHover = (item: MenuItem, category: keyof MenuData) => {
-    setCurrentItem(item);
-    setActiveCategory(category);
-  };
-
-  const openModal = () => {
-    if (!currentItem) return;
-    const options = [
-      ...new Set(currentItem.flavorSchedules.flatMap((fs) => fs.flavor)),
-    ];
-    setSelectedFlavor(options.length === 1 ? options[0] : "");
-    setSelectedPickupDate("");
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => setIsModalOpen(false);
-
-  const handleConfirm = () => {
-    if (
-      !currentItem ||
-      !selectedFlavor ||
-      !selectedPickupDate ||
-      currentPrice === null
-    )
-      return;
-    addItem({
-      name: currentItem.name,
-      price: currentPrice,
-      img: currentItem.img,
-      category:
-        activeCategory === "shippableItems" ? "shippable" : "pickupOnly",
-      flavor: selectedFlavor,
-      pickupDate: selectedPickupDate,
-    });
-    setAdded(true);
-    setTimeout(() => setAdded(false), 1500);
-    closeModal();
+    setSelectedItem(item);
+    setSelectedCategory(category);
   };
 
   return (
@@ -90,14 +55,16 @@ const MenuDesktop = ({ data }: { data: MenuData }) => {
         )}
         <div className="absolute bottom-8 left-8 z-20 hidden md:block">
           <button
-            onClick={openModal}
+            onClick={() =>
+              openModal(currentItem, activeCategory)
+            }
             className={`text-white text-xs px-4 py-2 rounded-xl shadow-md transition-all duration-300 flex items-center gap-2 shrink-0 ${
-              added
+              isAdded
                 ? "bg-green-500 hover:bg-green-500 scale-105"
                 : "bg-accent-gold hover:bg-accent-gold/80 hover:scale-110 hover:shadow-lg active:scale-95"
             }`}
           >
-            {added ? (
+            {isAdded ? (
               <>
                 <Check size={16} />
                 已加入購物車
@@ -124,74 +91,30 @@ const MenuDesktop = ({ data }: { data: MenuData }) => {
         </div>
 
         <div className="flex-grow overflow-y-auto pr-4 pb-4 z-10 space-y-12">
-          <section>
-            <h2 className="font-serif text-2xl md:text-3xl text-primary mb-6 pb-2 border-b border-accent-gold inline-block pr-8">
-              可宅配
-              <span className="text-xs font-sans tracking-[0.15em] text-accent-gold uppercase ml-2">
-                Shippable
-              </span>
-            </h2>
-            <ul className="space-y-4">
-              {data.shippableItems.map((item) => (
-                <li
-                  key={item.name}
-                  className={`group flex justify-between items-baseline text-lg md:text-xl font-light transition-colors cursor-pointer ${
-                    currentItem?.name === item.name &&
-                    activeCategory === "shippableItems"
-                      ? "text-accent-gold"
-                      : "text-gray-800 dark:text-gray-300 hover:text-accent-gold dark:hover:text-accent-gold"
-                  }`}
-                  onMouseEnter={() =>
-                    handleMenuItemHover(item, "shippableItems")
-                  }
-                  onClick={() => handleMenuItemHover(item, "shippableItems")}
-                >
-                  <span className="font-serif">{item.name}</span>
-                  <span className="text-base font-sans text-gray-500 dark:text-gray-500 group-hover:text-accent-gold/80 transition-colors">
-                    {getPriceDisplay(item)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="font-serif text-2xl md:text-3xl text-primary mb-6 pb-2 border-b border-accent-gold inline-block pr-8">
-              限自取
-              <span className="text-xs font-sans tracking-[0.15em] text-accent-gold uppercase ml-2">
-                Pickup Only
-              </span>
-            </h2>
-            <ul className="space-y-4">
-              {data.pickupOnlyItems.map((item) => (
-                <li
-                  key={item.name}
-                  className={`group flex justify-between items-baseline text-lg md:text-xl font-light transition-colors cursor-pointer ${
-                    currentItem?.name === item.name &&
-                    activeCategory === "pickupOnlyItems"
-                      ? "text-accent-gold"
-                      : "text-gray-800 dark:text-gray-300 hover:text-accent-gold dark:hover:text-accent-gold"
-                  }`}
-                  onMouseEnter={() =>
-                    handleMenuItemHover(item, "pickupOnlyItems")
-                  }
-                  onClick={() => handleMenuItemHover(item, "pickupOnlyItems")}
-                >
-                  <span className="font-serif">{item.name}</span>
-                  <span className="text-base font-sans text-gray-500 dark:text-gray-500 group-hover:text-accent-gold/80 transition-colors">
-                    {getPriceDisplay(item)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </section>
+          <MenuCategorySection
+            title="可宅配"
+            subtitle="Shippable"
+            items={data.shippableItems}
+            categoryKey="shippableItems"
+            currentItem={currentItem}
+            activeCategory={activeCategory}
+            onHover={handleMenuItemHover}
+          />
+          <MenuCategorySection
+            title="限自取"
+            subtitle="Pickup Only"
+            items={data.pickupOnlyItems}
+            categoryKey="pickupOnlyItems"
+            currentItem={currentItem}
+            activeCategory={activeCategory}
+            onHover={handleMenuItemHover}
+          />
         </div>
 
         <div className="absolute bottom-8 right-8 md:bottom-12 md:right-12 text-[10px] tracking-[0.3em] text-primary/30 dark:text-white/20 font-sans hidden md:block text-vertical">
           SEASONAL SELECTION — 03
         </div>
       </div>
-
 
       {/* Modal */}
       <div
@@ -210,87 +133,18 @@ const MenuDesktop = ({ data }: { data: MenuData }) => {
           }`}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="text-xs tracking-[0.2em] uppercase text-accent-gold font-sans mb-2">
-                Add To Cart
-              </p>
-              <h3 className="font-serif text-3xl text-primary">
-                {currentItem.name}
-              </h3>
-              <p className="font-sans text-sm text-gray-500 mt-2">
-                {currentPrice !== null
-                  ? `$ ${currentPrice}`
-                  : getPriceDisplay(currentItem)}
-              </p>
-            </div>
-            <button
-              onClick={closeModal}
-              className="h-9 w-9 rounded-full border border-black/15 flex items-center justify-center text-gray-500 hover:text-primary hover:border-black/30 transition-colors"
-              aria-label="關閉視窗"
-            >
-              <X size={18} />
-            </button>
-          </div>
-
-          <div className="mt-7">
-            <p className="text-sm font-sans tracking-[0.15em] text-gray-700 mb-3">
-              口味
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {flavorOptions.length > 0 ? (
-                flavorOptions.map((flavor) => (
-                  <button
-                    key={flavor}
-                    onClick={() => {
-                      setSelectedFlavor(flavor);
-                      setSelectedPickupDate("");
-                    }}
-                    className={`px-4 py-2 rounded-lg border text-sm font-sans transition-colors ${
-                      selectedFlavor === flavor
-                        ? "border-primary bg-primary text-white"
-                        : "border-black/30 text-primary hover:border-black/60"
-                    }`}
-                  >
-                    {flavor}
-                  </button>
-                ))
-              ) : (
-                <p className="text-sm text-gray-400 font-sans">
-                  此商品尚未設定口味
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="mt-6">
-            <p className="text-sm font-sans tracking-[0.15em] text-gray-700 mb-3">
-              取貨日期
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {!selectedFlavor ? (
-                <p className="text-sm text-gray-400 font-sans">請先選擇口味</p>
-              ) : selectedFlavorDates.length > 0 ? (
-                selectedFlavorDates.map((date) => (
-                  <button
-                    key={date}
-                    onClick={() => setSelectedPickupDate(date)}
-                    className={`px-4 py-2 rounded-lg border text-sm font-sans transition-colors ${
-                      selectedPickupDate === date
-                        ? "border-primary bg-primary text-white"
-                        : "border-black/30 text-primary hover:border-black/60"
-                    }`}
-                  >
-                    {date}
-                  </button>
-                ))
-              ) : (
-                <p className="text-sm text-gray-400 font-sans">
-                  此口味目前無可取貨日期
-                </p>
-              )}
-            </div>
-          </div>
+          <AddToCartModalContent
+            item={selectedItem ?? currentItem}
+            currentPrice={currentPrice}
+            flavorOptions={flavorOptions}
+            selectedFlavor={selectedFlavor}
+            selectedFlavorDates={selectedFlavorDates}
+            selectedPickupDate={selectedPickupDate}
+            onSelectFlavor={selectFlavor}
+            onSelectDate={setSelectedPickupDate}
+            onConfirm={handleConfirm}
+            onClose={closeModal}
+          />
 
           <div className="mt-8 flex justify-end gap-3">
             <button
@@ -312,5 +166,53 @@ const MenuDesktop = ({ data }: { data: MenuData }) => {
     </main>
   );
 };
+
+// ── Category list section ────────────────────────────────────────
+
+const MenuCategorySection = ({
+  title,
+  subtitle,
+  items,
+  categoryKey,
+  currentItem,
+  activeCategory,
+  onHover,
+}: {
+  title: string;
+  subtitle: string;
+  items: MenuItem[];
+  categoryKey: keyof MenuData;
+  currentItem: MenuItem;
+  activeCategory: keyof MenuData;
+  onHover: (item: MenuItem, category: keyof MenuData) => void;
+}) => (
+  <section>
+    <h2 className="font-serif text-2xl md:text-3xl text-primary mb-6 pb-2 border-b border-accent-gold inline-block pr-8">
+      {title}
+      <span className="text-xs font-sans tracking-[0.15em] text-accent-gold uppercase ml-2">
+        {subtitle}
+      </span>
+    </h2>
+    <ul className="space-y-4">
+      {items.map((item) => (
+        <li
+          key={item.name}
+          className={`group flex justify-between items-baseline text-lg md:text-xl font-light transition-colors cursor-pointer ${
+            currentItem?.name === item.name && activeCategory === categoryKey
+              ? "text-accent-gold"
+              : "text-gray-800 dark:text-gray-300 hover:text-accent-gold dark:hover:text-accent-gold"
+          }`}
+          onMouseEnter={() => onHover(item, categoryKey)}
+          onClick={() => onHover(item, categoryKey)}
+        >
+          <span className="font-serif">{item.name}</span>
+          <span className="text-base font-sans text-gray-500 dark:text-gray-500 group-hover:text-accent-gold/80 transition-colors">
+            {getPriceDisplay(item)}
+          </span>
+        </li>
+      ))}
+    </ul>
+  </section>
+);
 
 export default MenuDesktop;
