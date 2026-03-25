@@ -31,7 +31,6 @@ const getOrderFormSchema = (deliveryMethod: "pickup" | "shippable") =>
       socialUsername: z.string().min(1, "請輸入帳號名稱"),
     })
     .superRefine((data, ctx) => {
-      if (!data.socialUsername) return;
       const username = extractUsername(
         data.socialPlatform,
         data.socialUsername,

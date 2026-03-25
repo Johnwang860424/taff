@@ -8,9 +8,7 @@ const Contact = async () => {
     <main className="flex flex-col md:flex-row min-h-screen w-full relative">
       {/* Left Section - Contact Information */}
       <div className="w-full md:w-1/2 md:h-screen h-full flex flex-col justify-between p-8 md:p-24 md:py-16 bg-background-light order-2 md:order-1 overflow-y-auto scrollbar-hide">
-        {/* Contact Details */}
         <div className="z-10 relative max-w-xl">
-          {/* Contact Details */}
           <p className="text-sm tracking-[0.2em] uppercase text-accent-gold font-sans mb-3">
             CONTACT US
           </p>
@@ -80,10 +78,10 @@ const Contact = async () => {
           src={imgSrc}
           fill
           priority
-          unoptimized
+          sizes="(max-width: 768px) 100vw, 50vw"
         />
 
-        <div className="absolute bottom-8 right-8 md:bottom-12 md:right-12 text-[10px] tracking-[0.3em] text-primary/30 dark:text-white/20 font-sans hidden md:block writing-vertical-rl">
+        <div className="absolute bottom-8 right-8 md:bottom-12 md:right-12 text-[10px] tracking-[0.3em] text-primary/30 dark:text-white/20 font-sans hidden md:block text-vertical">
           CONTACT US — 02
         </div>
       </div>

@@ -1,22 +1,9 @@
 import { google } from "googleapis";
 import { unstable_cache } from "next/cache";
-
-export interface FlavorSchedule {
-  flavor: string[]; // 口味名稱（單一口味包在陣列中）
-  price: number; // 此口味的單價
-  dates: string[]; // 可取貨日期（YYYY-MM-DD）
-}
-
-export interface MenuItem {
-  name: string;
-  img: string;
-  flavorSchedules: FlavorSchedule[];
-}
-
-export interface MenuData {
-  shippableItems: MenuItem[];
-  pickupOnlyItems: MenuItem[];
-}
+export type { FlavorSchedule, MenuItem, MenuData } from "./menu-utils";
+export { isDateExpired, getPriceDisplay } from "./menu-utils";
+import { isDateExpired } from "./menu-utils";
+import type { FlavorSchedule, MenuData, MenuItem } from "@/lib/menu-utils";
 
 // ── 內部 raw 介面 ──────────────────────────────────────────────
 
@@ -68,12 +55,6 @@ const parseInventory = (rows: string[][]): RawInventory[] =>
   }));
 
 // ── 組裝 MenuData ──────────────────────────────────────────────
-
-const isDateExpired = (dateStr: string) => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return new Date(dateStr) < today;
-};
 
 const buildMenuData = (
   products: RawProduct[],

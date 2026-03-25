@@ -14,7 +14,7 @@ const Brand = async () => {
           src={imgSrc}
           fill
           priority
-          unoptimized
+          sizes="(max-width: 768px) 100vw, 50vw"
         />
 
         {/* Quote overlay */}
@@ -73,7 +73,7 @@ const Brand = async () => {
           </div>
         </div>
 
-        <div className="absolute bottom-8 right-8 md:bottom-12 md:right-12 text-[10px] tracking-[0.3em] text-primary/30 dark:text-white/20 font-sans hidden md:block writing-vertical-rl">
+        <div className="absolute bottom-8 right-8 md:bottom-12 md:right-12 text-[10px] tracking-[0.3em] text-primary/30 dark:text-white/20 font-sans hidden md:block text-vertical">
           BRAND STORY — 01
         </div>
       </div>

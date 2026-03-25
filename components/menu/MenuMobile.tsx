@@ -2,24 +2,10 @@
 
 import Image from "next/image";
 import { useState, useRef } from "react";
-import type { MenuData, MenuItem } from "@/lib/menu";
+import type { MenuData, MenuItem } from "@/lib/menu-utils";
+import { isDateExpired, getPriceDisplay } from "@/lib/menu-utils";
 import { ShoppingCart, Check, X } from "lucide-react";
 import { useCart, cartItemKey } from "@/context/CartContext";
-
-const today = new Date();
-today.setHours(0, 0, 0, 0);
-
-const isDateExpired = (dateStr: string) => new Date(dateStr) < today;
-
-const getPriceDisplay = (item: MenuItem): string => {
-  const prices = item.flavorSchedules
-    .map((fs) => fs.price)
-    .filter((p) => p > 0);
-  if (prices.length === 0) return "$ —";
-  const min = Math.min(...prices);
-  const max = Math.max(...prices);
-  return min === max ? `$ ${min}` : `$${min} 起`;
-};
 
 const MenuMobile = ({ data }: { data: MenuData }) => {
   const [activeCategory, setActiveCategory] =
@@ -141,12 +127,12 @@ const MenuMobile = ({ data }: { data: MenuData }) => {
         </div>
 
         <div className="grid grid-cols-1 gap-8 pt-4 pb-12">
-          {data[activeCategory]?.map((item, index) => {
+          {data[activeCategory]?.map((item) => {
             const itemPrefix = `${item.name}||`;
             const isAdded = addedKey?.startsWith(itemPrefix) ?? false;
             return (
               <div
-                key={index}
+                key={item.name}
                 className="group bg-surface-light rounded-2xl overflow-hidden bg-white"
               >
                 <div className="relative h-64 overflow-hidden">
