@@ -1,58 +1,77 @@
 import { unstable_cache } from "next/cache";
-import { getReadonlySheets } from "./sheets-client";
+import { getDb } from "@/lib/cloudflare";
+import { toLocalImageUrl } from "@/lib/images";
 export type { FlavorSchedule, MenuItem, MenuData } from "./menu-utils";
 export { isDateExpired, getPriceDisplay } from "./menu-utils";
 import { isDateExpired } from "./menu-utils";
 import type { FlavorSchedule, MenuData, MenuItem } from "@/lib/menu-utils";
 
-// ── 內部 raw 介面 ──────────────────────────────────────────────
+// ── D1 資料列 ──────────────────────────────────────────────────
 
-interface RawProduct {
-  id: string;
+interface ProductRow {
+  id: number;
   name: string;
-  imageUrl: string;
+  image_url: string;
   description: string;
   category: string; // "宅配" | "自取"
 }
 
+interface VariantRow {
+  id: number;
+  product_id: number;
+  flavor_name: string;
+  price: number;
+}
+
+interface InventoryRow {
+  variant_id: number;
+  date: string;
+  stock: number;
+}
+
+// ── 內部 raw 介面 ──────────────────────────────────────────────
+
+interface RawProduct {
+  id: number;
+  name: string;
+  imageUrl: string;
+  description: string;
+  category: string;
+}
+
 interface RawVariant {
-  id: string;
-  productId: string;
+  id: number;
+  productId: number;
   flavorName: string;
   price: number;
 }
 
 interface RawInventory {
-  variantId: string;
+  variantId: number;
   date: string;
   stock: number;
 }
 
-// ── Row parsers ────────────────────────────────────────────────
+const rowToProduct = (r: ProductRow): RawProduct => ({
+  id: r.id,
+  name: r.name,
+  imageUrl: toLocalImageUrl(r.image_url),
+  description: r.description,
+  category: r.category,
+});
 
-const parseProducts = (rows: string[][]): RawProduct[] =>
-  rows.slice(1).map((r) => ({
-    id: (r[0] || "").trim(),
-    name: (r[1] || "").trim(),
-    imageUrl: (r[2] || "").trim(),
-    description: (r[3] || "").trim(),
-    category: (r[4] || "").trim(),
-  }));
+const rowToVariant = (r: VariantRow): RawVariant => ({
+  id: r.id,
+  productId: r.product_id,
+  flavorName: r.flavor_name,
+  price: r.price,
+});
 
-const parseVariants = (rows: string[][]): RawVariant[] =>
-  rows.slice(1).map((r) => ({
-    id: (r[0] || "").trim(),
-    productId: (r[1] || "").trim(),
-    flavorName: (r[2] || "").trim(),
-    price: Number(r[3]) || 0,
-  }));
-
-const parseInventory = (rows: string[][]): RawInventory[] =>
-  rows.slice(1).map((r) => ({
-    variantId: (r[0] || "").trim(),
-    date: (r[1] || "").trim(),
-    stock: Number(r[2]) || 0,
-  }));
+const rowToInventory = (r: InventoryRow): RawInventory => ({
+  variantId: r.variant_id,
+  date: r.date,
+  stock: r.stock,
+});
 
 // ── 組裝 MenuData ──────────────────────────────────────────────
 
@@ -105,24 +124,19 @@ const buildMenuData = (
 };
 
 // ── 靜態資料快取（Products + Variants）────────────────────────
+// 後台新增/修改/刪除品項時會呼叫 revalidateTag("menu") 通知這裡重新抓取。
 
 const getStaticData = unstable_cache(
   async () => {
-    const sheets = getReadonlySheets();
-    const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
-
-    const response = await sheets.spreadsheets.values.batchGet({
-      spreadsheetId,
-      ranges: ["Products!A:E", "Variants!A:D"],
-    });
-
-    const [productRows, variantRows] = response.data.valueRanges?.map(
-      (vr) => vr.values ?? [],
-    ) ?? [[], []];
+    const db = await getDb();
+    const [productsRes, variantsRes] = await db.batch([
+      db.prepare("SELECT * FROM products ORDER BY created_at"),
+      db.prepare("SELECT * FROM variants"),
+    ]);
 
     return {
-      products: parseProducts(productRows),
-      variants: parseVariants(variantRows),
+      products: (productsRes.results as unknown as ProductRow[]).map(rowToProduct),
+      variants: (variantsRes.results as unknown as VariantRow[]).map(rowToVariant),
     };
   },
   ["menu-static-cache-v1"],
@@ -132,19 +146,14 @@ const getStaticData = unstable_cache(
 // ── 對外 API：每次請求都取得即時庫存 ──────────────────────────
 
 export const getMenuData = async (): Promise<MenuData> => {
-  const sheets = getReadonlySheets();
-  const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
+  const db = await getDb();
 
-  const [staticData, inventoryResponse] = await Promise.all([
+  const [staticData, inventoryRes] = await Promise.all([
     getStaticData(),
-    sheets.spreadsheets.values.get({
-      spreadsheetId,
-      range: "Inventory!A:C",
-    }),
+    db.prepare("SELECT * FROM inventory").all(),
   ]);
 
-  const inventoryRows = inventoryResponse.data.values ?? [];
-  const inventory = parseInventory(inventoryRows);
+  const inventory = (inventoryRes.results as unknown as InventoryRow[]).map(rowToInventory);
 
   return buildMenuData(staticData.products, staticData.variants, inventory);
 };

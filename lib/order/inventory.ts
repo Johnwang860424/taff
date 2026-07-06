@@ -1,111 +1,69 @@
-import type { sheets_v4 } from "googleapis";
+import type { D1Database } from "@cloudflare/workers-types";
 import type { OrderItem } from "./validation";
 
-interface Product {
-  id: string;
-  name: string;
-}
-
-interface Variant {
-  id: string;
-  productId: string;
-  flavorName: string;
-}
-
-interface InventoryRow {
-  variantId: string;
-  date: string;
-  stock: number;
-  sheetRow: number;
-}
-
-export interface StockDeduction {
-  sheetRow: number;
-  newStock: number;
+export interface ResolvedOrderItem extends OrderItem {
+  variantId: number | null;
 }
 
 interface InventoryCheckResult {
   insufficient: string[];
-  deductions: StockDeduction[];
+  resolved: ResolvedOrderItem[];
 }
 
-const parseProducts = (rows: string[][]): Product[] =>
-  rows.slice(1).map((r) => ({
-    id: (r[0] || "").trim(),
-    name: (r[1] || "").trim(),
-  }));
+/** 依商品名稱 + 口味回查 variant id (找不到回傳 null) */
+async function resolveVariantId(
+  db: D1Database,
+  productName: string,
+  flavorName: string,
+): Promise<number | null> {
+  const variant = await db
+    .prepare(
+      `SELECT v.id FROM variants v
+       JOIN products p ON p.id = v.product_id
+       WHERE p.name = ? AND v.flavor_name = ?`,
+    )
+    .bind(productName, flavorName)
+    .first<{ id: number }>();
+  return variant?.id ?? null;
+}
 
-const parseVariants = (rows: string[][]): Variant[] =>
-  rows.slice(1).map((r) => ({
-    id: (r[0] || "").trim(),
-    productId: (r[1] || "").trim(),
-    flavorName: (r[2] || "").trim(),
-  }));
-
-const parseInventory = (rows: string[][]): InventoryRow[] =>
-  rows.slice(1).map((r, i) => ({
-    variantId: (r[0] || "").trim(),
-    date: (r[1] || "").trim(),
-    stock: Number(r[2]) || 0,
-    sheetRow: i + 2,
-  }));
-
+/** 檢查每個品項在指定日期的庫存是否足夠 (同一 variant+日期的多筆需求會加總比對) */
 export async function checkInventory(
-  sheets: sheets_v4.Sheets,
-  spreadsheetId: string,
+  db: D1Database,
   items: OrderItem[],
 ): Promise<InventoryCheckResult> {
-  const menuData = await sheets.spreadsheets.values.batchGet({
-    spreadsheetId,
-    ranges: ["Products!A:B", "Variants!A:C", "Inventory!A:C"],
-  });
+  const resolved: ResolvedOrderItem[] = await Promise.all(
+    items.map(async (item) => ({
+      ...item,
+      variantId: await resolveVariantId(db, item.name, item.flavor),
+    })),
+  );
 
-  const [productRows, variantRows, inventoryRows] =
-    menuData.data.valueRanges?.map((vr) => vr.values ?? []) ?? [[], [], []];
-
-  const products = parseProducts(productRows);
-  const variants = parseVariants(variantRows);
-  const inventory = parseInventory(inventoryRows);
-
-  const insufficient: string[] = [];
-  const deductions: StockDeduction[] = [];
-
-  for (const item of items) {
-    const product = products.find((p) => p.name === item.name);
-    if (!product) continue;
-    const variant = variants.find(
-      (v) => v.productId === product.id && v.flavorName === item.flavor,
-    );
-    if (!variant) continue;
-    const inv = inventory.find(
-      (i) => i.variantId === variant.id && i.date === item.pickupDate,
-    );
-    const stock = inv?.stock ?? 0;
-    if (stock < item.quantity) {
-      insufficient.push(
-        `${item.name}（${item.flavor}）${item.pickupDate}：庫存剩 ${stock}，需求 ${item.quantity}`,
-      );
-    } else if (inv) {
-      deductions.push({ sheetRow: inv.sheetRow, newStock: stock - item.quantity });
-    }
+  const required = new Map<string, number>();
+  for (const item of resolved) {
+    if (!item.variantId) continue;
+    const key = `${item.variantId}_${item.pickupDate}`;
+    required.set(key, (required.get(key) ?? 0) + item.quantity);
   }
 
-  return { insufficient, deductions };
-}
-
-export async function deductStock(
-  sheets: sheets_v4.Sheets,
-  spreadsheetId: string,
-  deductions: StockDeduction[],
-): Promise<void> {
+  const insufficient: string[] = [];
   await Promise.all(
-    deductions.map(({ sheetRow, newStock }) =>
-      sheets.spreadsheets.values.update({
-        spreadsheetId,
-        range: `Inventory!C${sheetRow}`,
-        valueInputOption: "RAW",
-        requestBody: { values: [[newStock]] },
-      }),
-    ),
+    Array.from(required.entries()).map(async ([key, qty]) => {
+      const [variantIdStr, date] = key.split("_");
+      const variantId = Number(variantIdStr);
+      const inv = await db
+        .prepare("SELECT stock FROM inventory WHERE variant_id = ? AND date = ?")
+        .bind(variantId, date)
+        .first<{ stock: number }>();
+      const stock = inv?.stock ?? 0;
+      if (stock < qty) {
+        const item = resolved.find((r) => r.variantId === variantId);
+        insufficient.push(
+          `${item?.name ?? ""}（${item?.flavor ?? ""}）${date}：庫存剩 ${stock}，需求 ${qty}`,
+        );
+      }
+    }),
   );
+
+  return { insufficient, resolved };
 }

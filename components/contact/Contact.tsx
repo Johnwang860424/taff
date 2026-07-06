@@ -1,9 +1,9 @@
 import Image from "next/image";
 import SocialLinks from "@/components/SocialLinks";
-import { getCloudinaryUrl } from "@/lib/cloudinary";
+import { getSiteImageUrl } from "@/lib/site-images";
 
 const Contact = async () => {
-  const imgSrc = await getCloudinaryUrl("taff/site/contact");
+  const imgSrc = await getSiteImageUrl("contact");
   return (
     <main className="flex flex-col md:flex-row min-h-screen w-full relative">
       {/* Left Section - Contact Information */}
@@ -18,7 +18,7 @@ const Contact = async () => {
 
           <div className="w-20 h-[1px] bg-accent-gold mb-10"></div>
 
-          <div className="space-y-10 text-primary/75 dark:text-gray-300 font-serif">
+          <div className="space-y-10 text-primary/75 font-serif">
             {/* Service */}
             <section>
               <h3 className="text-xs font-sans tracking-[0.15em] text-accent-gold uppercase mb-4">
@@ -72,16 +72,18 @@ const Contact = async () => {
       {/* Right Section - Image */}
       <div className="w-full md:w-1/2 shrink-0 min-h-[50vh] relative overflow-hidden order-1 group">
         <div className="absolute inset-0 bg-stone-900/10 transition-opacity duration-700 group-hover:bg-stone-900/0 z-10"></div>
-        <Image
-          alt="極簡風格的甜點工作室內部，柔和的燈光和精緻的糕點"
-          className="absolute inset-0 w-full h-full object-cover transform scale-105"
-          src={imgSrc}
-          fill
-          priority
-          sizes="(max-width: 768px) 100vw, 50vw"
-        />
+        {imgSrc && (
+          <Image
+            alt="極簡風格的甜點工作室內部，柔和的燈光和精緻的糕點"
+            className="absolute inset-0 w-full h-full object-cover transform scale-105"
+            src={imgSrc}
+            fill
+            priority
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
+        )}
 
-        <div className="absolute bottom-8 right-8 md:bottom-12 md:right-12 text-[10px] tracking-[0.3em] text-primary/30 dark:text-white/20 font-sans hidden md:block text-vertical">
+        <div className="absolute bottom-8 right-8 md:bottom-12 md:right-12 text-[10px] tracking-[0.3em] text-primary/30 font-sans hidden md:block text-vertical">
           CONTACT US — 02
         </div>
       </div>

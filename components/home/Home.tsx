@@ -1,10 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import SocialLinks from "@/components/SocialLinks";
-import { getCloudinaryUrl } from "@/lib/cloudinary";
+import { getSiteImageUrl } from "@/lib/site-images";
 
 const Home = async () => {
-  const imgSrc = await getCloudinaryUrl("taff/site/home");
+  const imgSrc = await getSiteImageUrl("home");
   return (
     <main className="flex flex-col md:flex-row min-h-screen w-full relative">
       {/* Left Section: Text & Branding */}
@@ -46,14 +46,16 @@ const Home = async () => {
       {/* Right Section: Imagery */}
       <div className="w-full md:w-1/2 shrink-0 min-h-[50vh] relative overflow-hidden order-1 group">
         <div className="absolute inset-0 bg-stone-900/10 transition-opacity duration-700 group-hover:bg-stone-900/0 z-10"></div>
-        <Image
-          alt="Artisan dessert pastries on a stand"
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-105"
-          src={imgSrc}
-          fill
-          priority
-          sizes="(max-width: 768px) 100vw, 50vw"
-        />
+        {imgSrc && (
+          <Image
+            alt="Artisan dessert pastries on a stand"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-105"
+            src={imgSrc}
+            fill
+            priority
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
+        )}
       </div>
 
       <div className="absolute bottom-10 right-6 md:bottom-12 md:right-12 z-20 text-[9px] md:text-[10px] tracking-[0.3em] text-white/60 font-sans block uppercase pointer-events-none">

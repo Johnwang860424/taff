@@ -1,25 +1,27 @@
 import Image from "next/image";
-import { getCloudinaryUrl } from "@/lib/cloudinary";
+import { getSiteImageUrl } from "@/lib/site-images";
 
 const Brand = async () => {
-  const imgSrc = await getCloudinaryUrl("taff/site/brand-story");
+  const imgSrc = await getSiteImageUrl("brand-story");
   return (
     <main className="flex flex-col md:flex-row min-h-screen w-full relative">
       {/* Left Section: Image */}
       <div className="w-full md:w-1/2 shrink-0 min-h-[50vh] relative overflow-hidden order-1 group">
         <div className="absolute inset-0 bg-stone-900/10 transition-opacity duration-700 group-hover:bg-stone-900/0 z-10"></div>
-        <Image
-          alt="甜點師傅專注製作甜點的手部特寫,溫暖光線"
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-105"
-          src={imgSrc}
-          fill
-          priority
-          sizes="(max-width: 768px) 100vw, 50vw"
-        />
+        {imgSrc && (
+          <Image
+            alt="甜點師傅專注製作甜點的手部特寫,溫暖光線"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-105"
+            src={imgSrc}
+            fill
+            priority
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
+        )}
 
         {/* Quote overlay */}
         <div className="absolute bottom-10 left-10 md:bottom-20 md:left-20 z-20 text-white/95 max-w-xs md:max-w-md opacity-0 md:opacity-100 transition-opacity duration-1000 delay-300">
-          <p className="font-serif italic text-2xl md:text-3xl leading-relaxed tracking-wide drop-shadow-lg">
+          <p className="font-serif italic text-2xl md:text-3xl tracking-wide drop-shadow-lg">
             &quot;Crafting moments of sweetness,
             <br />
             one cloud at a time.&quot;
@@ -34,7 +36,7 @@ const Brand = async () => {
             BRAND STORY
           </p>
           {/* Title */}
-          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-primary dark:text-white mb-8 tracking-widest font-light">
+          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-primary mb-8 tracking-widest font-light">
             品牌故事
           </h1>
 
@@ -43,7 +45,7 @@ const Brand = async () => {
 
           {/* Quote section */}
           <div className="mb-10">
-            <p className="font-serif text-xl md:text-2xl text-primary/90 dark:text-white/90 leading-loose tracking-wide border-l-[3px] border-accent-gold/40 pl-6 italic">
+            <p className="font-serif text-xl md:text-2xl text-primary/90 leading-loose tracking-wide border-l-[3px] border-accent-gold/40 pl-6 italic">
               「源自對甜點的純粹熱愛,我們相信每一份甜點都是雲朵般的輕盈與溫柔。」
             </p>
           </div>
@@ -62,18 +64,18 @@ const Brand = async () => {
           {/* Brand signature */}
           <div className="mt-12 flex items-center space-x-6">
             <div className="flex flex-col">
-              <span className="font-serif italic text-2xl text-primary dark:text-white">
+              <span className="font-serif italic text-2xl text-primary">
                 Taff Dessert
               </span>
               <span className="text-[10px] tracking-[0.25em] uppercase text-accent-gold mt-1">
                 Artisan Studio
               </span>
             </div>
-            <span className="h-px w-16 bg-primary/10 dark:bg-white/10"></span>
+            <span className="h-px w-16 bg-primary/10"></span>
           </div>
         </div>
 
-        <div className="absolute bottom-8 right-8 md:bottom-12 md:right-12 text-[10px] tracking-[0.3em] text-primary/30 dark:text-white/20 font-sans hidden md:block text-vertical">
+        <div className="absolute bottom-8 right-8 md:bottom-12 md:right-12 text-[10px] tracking-[0.3em] text-primary/30 font-sans hidden md:block text-vertical">
           BRAND STORY — 01
         </div>
       </div>

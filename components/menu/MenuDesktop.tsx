@@ -111,7 +111,7 @@ const MenuDesktop = ({ data }: { data: MenuData }) => {
           />
         </div>
 
-        <div className="absolute bottom-8 right-8 md:bottom-12 md:right-12 text-[10px] tracking-[0.3em] text-primary/30 dark:text-white/20 font-sans hidden md:block text-vertical">
+        <div className="absolute bottom-8 right-8 md:bottom-12 md:right-12 text-[10px] tracking-[0.3em] text-primary/30 font-sans hidden md:block text-vertical">
           SEASONAL SELECTION — 03
         </div>
       </div>
@@ -200,13 +200,13 @@ const MenuCategorySection = ({
           className={`group flex justify-between items-baseline text-lg md:text-xl font-light transition-colors cursor-pointer ${
             currentItem?.name === item.name && activeCategory === categoryKey
               ? "text-accent-gold"
-              : "text-gray-800 dark:text-gray-300 hover:text-accent-gold dark:hover:text-accent-gold"
+              : "text-gray-800 hover:text-accent-gold"
           }`}
           onMouseEnter={() => onHover(item, categoryKey)}
           onClick={() => onHover(item, categoryKey)}
         >
           <span className="font-serif">{item.name}</span>
-          <span className="text-base font-sans text-gray-500 dark:text-gray-500 group-hover:text-accent-gold/80 transition-colors">
+          <span className="text-base font-sans text-gray-500 group-hover:text-accent-gold/80 transition-colors">
             {getPriceDisplay(item)}
           </span>
         </li>

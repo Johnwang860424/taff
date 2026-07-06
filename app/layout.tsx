@@ -7,14 +7,15 @@ import { CartProvider } from '@/context/CartContext';
 
 const cormorantGaramond = Cormorant_Garamond({
   subsets: ['latin'],
-  variable: '--font-serif',
+  variable: '--font-cormorant',
   weight: ['300', '400', '600'],
+  style: ['normal', 'italic'],
   display: 'swap',
 });
 
 const montserrat = Montserrat({
   subsets: ['latin'],
-  variable: '--font-sans',
+  variable: '--font-montserrat',
   weight: ['300', '400', '500'],
   display: 'swap',
 });
@@ -56,11 +57,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh-TW" className={`${cormorantGaramond.variable} ${montserrat.variable} ${notoSerifTC.variable} ${notoSansTC.variable}`}>
-<body className="bg-background-light text-primary antialiased overflow-x-hidden font-sans selection:bg-accent-gold/30">
+      <body className="bg-background-light text-primary antialiased overflow-x-hidden font-sans selection:bg-accent-gold/30">
         <CartProvider>
           <div className="relative min-h-screen">
             <Navbar />
-            
+
             {/* Decorative central element that bridges both halves */}
             <div className="fixed inset-0 pointer-events-none flex items-center justify-center z-20 overflow-hidden">
               <DecorativeCircle />

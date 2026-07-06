@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { getReadWriteSheets } from "@/lib/sheets-client";
+import { getDb } from "@/lib/cloudflare";
 import { orderBodySchema } from "@/lib/order/validation";
-import { checkInventory, deductStock } from "@/lib/order/inventory";
+import { checkInventory } from "@/lib/order/inventory";
 import { writeOrder } from "@/lib/order/repository";
 
 export async function POST(req: Request) {
@@ -13,23 +13,10 @@ export async function POST(req: Request) {
     }
     const { form, deliveryMethod, items } = parsed.data;
 
-    const menuSpreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
-    const orderSpreadsheetId = process.env.GOOGLE_ORDER_SPREADSHEET_ID;
-    if (!menuSpreadsheetId || !orderSpreadsheetId) {
-      return NextResponse.json(
-        { error: "Missing spreadsheet configuration" },
-        { status: 500 },
-      );
-    }
-
-    const sheets = getReadWriteSheets();
+    const db = await getDb();
 
     // Check inventory
-    const { insufficient, deductions } = await checkInventory(
-      sheets,
-      menuSpreadsheetId,
-      items,
-    );
+    const { insufficient, resolved } = await checkInventory(db, items);
 
     if (insufficient.length > 0) {
       return NextResponse.json(
@@ -38,24 +25,17 @@ export async function POST(req: Request) {
       );
     }
 
-    // Deduct stock first (fail-safe: no order written if deduction fails)
-    await deductStock(sheets, menuSpreadsheetId, deductions);
-
-    // Write order
-    await writeOrder(sheets, orderSpreadsheetId, form, deliveryMethod, items);
+    // Write order + deduct stock (single atomic batch)
+    await writeOrder(db, form, deliveryMethod, resolved);
 
     return NextResponse.json({ ok: true });
   } catch (error) {
-    const err = error as Error & { code?: number; response?: { data?: unknown } };
-    const message = err?.response?.data
-      ? JSON.stringify((err.response as { data?: unknown }).data)
-      : err?.message ?? String(error);
-    console.error("Order submit error", err);
+    console.error("Order submit error", error);
 
     return NextResponse.json(
       {
         error: "Failed to submit order",
-        detail: process.env.NODE_ENV === "development" ? message : undefined,
+        detail: process.env.NODE_ENV === "development" ? (error as Error)?.message : undefined,
       },
       { status: 500 },
     );
