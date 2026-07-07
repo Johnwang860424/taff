@@ -6,7 +6,6 @@ import { getPriceDisplay } from "@/lib/menu-utils";
 
 type Props = {
   item: MenuItem | null;
-  isOpen: boolean;
   currentPrice: number | null;
   flavorOptions: string[];
   selectedFlavor: string;
@@ -14,9 +13,15 @@ type Props = {
   selectedPickupDate: string;
   onSelectFlavor: (flavor: string) => void;
   onSelectDate: (date: string) => void;
-  onConfirm: () => void;
   onClose: () => void;
 };
+
+const chipClass = (active: boolean) =>
+  `px-4 py-2.5 rounded-soft border text-sm transition-colors ${
+    active
+      ? "bg-primary border-primary text-on-primary"
+      : "bg-transparent border-ghost-line text-on-surface hover:border-primary"
+  }`;
 
 const FlavorPicker = ({
   options,
@@ -27,23 +32,19 @@ const FlavorPicker = ({
   selected: string;
   onSelect: (f: string) => void;
 }) => (
-  <div className="flex flex-wrap gap-2">
+  <div className="flex flex-wrap gap-[9px]">
     {options.length > 0 ? (
       options.map((flavor) => (
         <button
           key={flavor}
           onClick={() => onSelect(flavor)}
-          className={`px-4 py-2 rounded-soft border text-sm font-sans transition-colors ${
-            selected === flavor
-              ? "border-primary bg-primary text-on-primary"
-              : "border-outline-variant text-on-surface hover:border-primary"
-          }`}
+          className={chipClass(selected === flavor)}
         >
           {flavor}
         </button>
       ))
     ) : (
-      <p className="text-sm text-on-surface-variant/70 font-sans">此商品尚未設定口味</p>
+      <p className="text-sm text-on-surface-variant/70">此商品尚未設定口味</p>
     )}
   </div>
 );
@@ -59,57 +60,24 @@ const DatePicker = ({
   selectedDate: string;
   onSelect: (d: string) => void;
 }) => (
-  <div className="flex flex-wrap gap-2">
+  <div className="flex flex-wrap gap-[9px]">
     {!selectedFlavor ? (
-      <p className="text-sm text-on-surface-variant/70 font-sans">請先選擇口味</p>
+      <p className="text-sm text-on-surface-variant/70">請先選擇口味</p>
     ) : dates.length > 0 ? (
       dates.map((date) => (
         <button
           key={date}
           onClick={() => onSelect(date)}
-          className={`px-4 py-2 rounded-soft border text-sm font-label tracking-[0.05em] transition-colors ${
-            selectedDate === date
-              ? "border-primary bg-primary text-on-primary"
-              : "border-outline-variant text-on-surface hover:border-primary"
-          }`}
+          className={chipClass(selectedDate === date)}
         >
           {date}
         </button>
       ))
     ) : (
-      <p className="text-sm text-on-surface-variant/70 font-sans">
+      <p className="text-sm text-on-surface-variant/70">
         此口味目前無可取貨日期
       </p>
     )}
-  </div>
-);
-
-const ModalHeader = ({
-  item,
-  currentPrice,
-  onClose,
-}: {
-  item: MenuItem;
-  currentPrice: number | null;
-  onClose: () => void;
-}) => (
-  <div className="flex items-start justify-between gap-4">
-    <div>
-      <p className="font-label text-[11px] tracking-[0.1em] uppercase text-on-surface-variant mb-2">
-        Add To Cart
-      </p>
-      <h3 className="font-serif text-3xl text-on-surface">{item.name}</h3>
-      <p className="font-label text-sm tracking-[0.1em] text-primary mt-2">
-        {currentPrice !== null ? `$ ${currentPrice}` : getPriceDisplay(item)}
-      </p>
-    </div>
-    <button
-      onClick={onClose}
-      className="h-9 w-9 rounded-soft border border-ghost-line flex items-center justify-center text-on-surface-variant hover:text-primary hover:border-outline transition-colors"
-      aria-label="關閉視窗"
-    >
-      <X size={18} strokeWidth={1} />
-    </button>
   </div>
 );
 
@@ -122,37 +90,46 @@ export const AddToCartModalContent = ({
   selectedPickupDate,
   onSelectFlavor,
   onSelectDate,
-  onConfirm,
   onClose,
-}: Omit<Props, "isOpen">) => {
+}: Props) => {
   if (!item) return null;
 
   return (
     <>
-      <ModalHeader item={item} currentPrice={currentPrice} onClose={onClose} />
-
-      <div className="mt-7">
-        <p className="font-label text-xs tracking-[0.1em] uppercase text-on-surface-variant mb-3">
-          口味
-        </p>
-        <FlavorPicker
-          options={flavorOptions}
-          selected={selectedFlavor}
-          onSelect={onSelectFlavor}
-        />
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h3 className="font-serif text-[23px] text-on-surface">{item.name}</h3>
+          <p className="mt-1.5 text-[15px] text-primary">
+            {currentPrice !== null ? `$ ${currentPrice}` : getPriceDisplay(item)}
+          </p>
+        </div>
+        <button
+          onClick={onClose}
+          className="h-[34px] w-[34px] flex-none rounded-soft border border-ghost-line flex items-center justify-center text-on-surface-variant hover:text-primary hover:border-outline transition-colors"
+          aria-label="關閉"
+        >
+          <X size={16} strokeWidth={1.4} />
+        </button>
       </div>
 
-      <div className="mt-6">
-        <p className="font-label text-xs tracking-[0.1em] uppercase text-on-surface-variant mb-3">
-          取貨日期
-        </p>
-        <DatePicker
-          selectedFlavor={selectedFlavor}
-          dates={selectedFlavorDates}
-          selectedDate={selectedPickupDate}
-          onSelect={onSelectDate}
-        />
-      </div>
+      <p className="mt-[22px] mb-2.5 text-[13px] text-on-surface-variant">
+        選擇口味
+      </p>
+      <FlavorPicker
+        options={flavorOptions}
+        selected={selectedFlavor}
+        onSelect={onSelectFlavor}
+      />
+
+      <p className="mt-5 mb-2.5 text-[13px] text-on-surface-variant">
+        取貨 / 出貨日
+      </p>
+      <DatePicker
+        selectedFlavor={selectedFlavor}
+        dates={selectedFlavorDates}
+        selectedDate={selectedPickupDate}
+        onSelect={onSelectDate}
+      />
     </>
   );
 };

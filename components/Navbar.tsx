@@ -1,54 +1,72 @@
 "use client";
 import { ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import Logo from '@/components/Logo';
-import { useState } from 'react';
-import MobileSidebar from '@/components/MobileSidebar';
 import { MENU_ITEMS } from '@/constants/menu';
 import { useCart } from '@/context/CartContext';
 
+const CartBadge = ({ count }: { count: number }) => {
+  if (count <= 0) return null;
+  return (
+    <span className="absolute -top-1 -right-1.5 min-w-4 h-4 px-1 bg-primary rounded-full flex items-center justify-center text-[10px] text-on-primary font-medium leading-none">
+      {count > 9 ? '9+' : count}
+    </span>
+  );
+};
+
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
   const { totalItems } = useCart();
 
+  const isActive = (href: string) =>
+    href === '/' ? pathname === '/' : pathname.startsWith(href);
+
   return (
-    <nav className="fixed top-0 w-full z-50 p-6 flex items-center justify-between bg-gradient-to-b from-background/95 via-background/60 to-transparent">
-      <Link href="/" className="text-primary hover:opacity-70 transition-opacity">
-        <Logo size={50} filled={true} />
-      </Link>
+    <div className="sticky top-0 z-40 w-full">
+      {/* 手機版頂欄：品牌識別，導覽交給底部 tab bar */}
+      <header className="md:hidden flex items-center justify-between h-14 px-5 bg-background border-b border-ghost-line">
+        <Link href="/" className="flex items-center gap-2.5">
+          <Logo size={26} filled className="text-primary" />
+          <span className="font-serif text-lg text-on-surface">塔芙</span>
+        </Link>
+        <span className="font-label text-[10px] tracking-[0.22em] text-outline">
+          TAFF DESSERT
+        </span>
+      </header>
 
-      <div className="flex items-center">
-        {/* Menu items - desktop */}
-        <div className="hidden md:flex items-center space-x-10 text-xs md:text-sm tracking-[0.25em] font-medium uppercase text-primary">
+      {/* 桌機版頂欄 */}
+      <nav className="hidden md:flex items-center justify-between px-14 py-4 bg-background/90 backdrop-blur border-b border-ghost-line">
+        <Link href="/" className="flex items-center gap-3">
+          <Logo size={50} filled className="text-primary" />
+          <span className="font-serif text-2xl text-on-surface">塔芙</span>
+        </Link>
+
+        <div className="flex items-center gap-10">
           {MENU_ITEMS.map((item) => (
-            <Link key={item.href} href={item.href} className="hover:opacity-70">{item.zh}</Link>
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`text-[15px] tracking-[0.02em] pb-1 border-b transition-colors font-medium ${isActive(item.href)
+                ? 'text-primary border-primary'
+                : 'text-on-surface-variant border-transparent hover:text-primary'
+                }`}
+            >
+              {item.zh}
+            </Link>
           ))}
-        </div>
 
-        <div className="flex items-center space-x-6 md:ml-10">
-          {/* Mobile menu trigger：兩條不等長水平細線 */}
-          <button
-            className="md:hidden flex flex-col items-end gap-2 py-2 text-primary hover:opacity-70"
-            onClick={() => setIsOpen(true)}
-            aria-label="開啟選單"
+          <Link
+            href="/cart"
+            className="relative text-primary hover:text-primary-dark transition-colors p-1"
+            aria-label="購物車"
           >
-            <span className="block h-px w-7 bg-current" />
-            <span className="block h-px w-4 bg-current" />
-          </button>
-
-          {/* Shopping bag icon */}
-          <Link href="/cart" className="relative group text-primary hover:opacity-70">
-            <ShoppingBag size={22} strokeWidth={1} />
-            {totalItems > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 h-4 w-4 bg-primary rounded-full border border-background flex items-center justify-center text-[9px] text-on-primary font-medium leading-none">
-                {totalItems > 9 ? '9+' : totalItems}
-              </span>
-            )}
+            <ShoppingBag size={22} strokeWidth={1.3} />
+            <CartBadge count={totalItems} />
           </Link>
         </div>
-        <MobileSidebar open={isOpen} setOpen={setIsOpen} />
-      </div>
-    </nav>
+      </nav>
+    </div>
   );
 };
 

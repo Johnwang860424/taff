@@ -1,17 +1,18 @@
 @import "tailwindcss";
 
 @theme {
-    /* DESIGN.md 色彩 tokens（僅落地實際使用的子集） */
+    /* Taff Mobile/Desktop 設計稿色彩 tokens */
     --color-primary: #C6A87C;
+    --color-primary-dark: #5C4230;
     --color-on-primary: #ffffff;
-    --color-background: #EEECE1;
-    --color-surface-container: #f0eded;
-    --color-on-surface: #1b1c1c;
-    --color-on-surface-variant: #4e453e;
-    --color-outline: #80756d;
-    --color-outline-variant: #d1c4ba;
-    --color-ghost-line: #e0ddd5;
-    --color-primary-fixed: #f9dec6;
+    --color-background: #EFE9DE;
+    --color-surface-container: #FBF7F2;
+    --color-on-surface: #2B241E;
+    --color-on-surface-variant: #6F6156;
+    --color-outline: #9D8F80;
+    --color-outline-variant: #E6DCCD;
+    --color-ghost-line: #E6DCCD;
+    --color-primary-fixed: #F1E4D2;
     --color-error: #ba1a1a;
 
     /* 字體：標題襯線 / 內文無襯線 / 編號標籤 */
@@ -43,9 +44,12 @@
 }
 
 @keyframes fillFadeIn {
-    0%, 60% {
+
+    0%,
+    60% {
         fill-opacity: 0;
     }
+
     100% {
         fill-opacity: 1;
     }
@@ -60,7 +64,7 @@
 .cloud-path-filled {
     stroke-dasharray: 1000;
     stroke-dashoffset: 1000;
-    animation: 
+    animation:
         draw 2s ease-out forwards,
         fillFadeIn 2.5s ease-out forwards;
 }
@@ -72,6 +76,14 @@
 body {
     cursor: default;
     line-height: 1.6;
+}
+
+@utility scrollbar-hide {
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
 }
 
 .text-vertical {

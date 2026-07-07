@@ -7,6 +7,7 @@ export interface FlavorSchedule {
 export interface MenuItem {
   name: string;
   img: string;
+  description: string;
   flavorSchedules: FlavorSchedule[];
 }
 

@@ -110,6 +110,7 @@ const buildMenuData = (
     const menuItem: MenuItem = {
       name: product.name,
       img: product.imageUrl,
+      description: product.description ?? "",
       flavorSchedules,
     };
 

@@ -1,85 +1,146 @@
 import Image from "next/image";
+import SocialLinks from "@/components/SocialLinks";
 import { getSiteImageUrl } from "@/lib/site-images";
+
+const MAP_SRC =
+  "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3652.9074767437846!2d120.43775407513047!3d23.714997890135084!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346eb7ed35ed3bef%3A0x49409285425ead5a!2z5aGU6IqZ55Sc6bueIFRhZmYgRGVzc2VydO-8iOmgkOe0hOWItu-8iQ!5e0!3m2!1szh-TW!2stw!4v1770542101522!5m2!1szh-TW!2stw";
+
+const STORY = [
+  "塔芙成立於 2022 年，在虎尾一個安靜的巷子裡。由兩位熱愛甜點的職人創立，堅持使用最純粹的原料，將對甜點的熱情轉化為每一口的感動。",
+];
+
+const SectionTitle = ({ children }: { children: React.ReactNode }) => (
+  <h3 className="text-[13px] text-primary font-medium mb-[7px]">{children}</h3>
+);
+
+const MapEmbed = ({ className }: { className: string }) => (
+  <div className={`${className} rounded-soft overflow-hidden border border-ghost-line`}>
+    <iframe
+      className="w-full h-full border-0"
+      src={MAP_SRC}
+      title="地圖"
+      loading="lazy"
+    />
+  </div>
+);
 
 const Brand = async () => {
   const imgSrc = await getSiteImageUrl("brand-story");
-  return (
-    <main className="flex flex-col lg:flex-row min-h-screen w-full relative">
-      {/* Image：手機置頂，桌機在左半 */}
-      <div className="w-full lg:w-1/2 shrink-0 min-h-[48vh] relative overflow-hidden order-1 group">
-        <div className="absolute inset-0 bg-on-surface/10 transition-opacity duration-700 group-hover:bg-on-surface/0 z-10"></div>
-        {imgSrc && (
-          <Image
-            alt="甜點師傅專注製作甜點的手部特寫,溫暖光線"
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-105"
-            src={imgSrc}
-            fill
-            priority
-            sizes="(max-width: 1024px) 100vw, 50vw"
-          />
-        )}
 
-        {/* Quote overlay：桌機顯示 */}
-        <div className="absolute bottom-10 left-10 lg:bottom-20 lg:left-20 z-20 text-white/95 max-w-xs lg:max-w-md opacity-0 lg:opacity-100 transition-opacity duration-1000 delay-300">
-          <p className="font-serif italic text-2xl lg:text-3xl tracking-wide drop-shadow-lg">
-            &quot;Crafting moments of sweetness,
-            <br />
-            one cloud at a time.&quot;
-          </p>
+  return (
+    <main>
+      {/* ── 手機版 ─────────────────────────────────────────── */}
+      <div className="lg:hidden">
+        <div className="relative h-[220px] w-full">
+          {imgSrc && (
+            <Image
+              alt="塔芙甜點工作室"
+              src={imgSrc}
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
+            />
+          )}
+        </div>
+
+        <div className="px-page pt-6 pb-8">
+          <h1 className="font-serif text-[27px] text-on-surface mb-1">
+            關於塔芙
+          </h1>
+          <p className="text-[13px] text-outline mb-5">虎尾 · 2022 年至今</p>
+
+          <div className="flex flex-col gap-[15px] text-[15px] leading-[1.85] text-on-surface-variant">
+            {STORY.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </div>
+
+          <div className="mt-7 flex flex-col gap-[22px]">
+            <div>
+              <SectionTitle>服務項目</SectionTitle>
+              <p className="text-[15px] leading-[1.7] text-on-surface">
+                預約制甜點、婚禮喜餅、節慶禮盒、企業訂製、Candy Bar
+              </p>
+            </div>
+            <div>
+              <SectionTitle>地址</SectionTitle>
+              <p className="text-[15px] leading-[1.7] text-on-surface mb-3">
+                雲林縣虎尾鎮林森路一段 157 巷 48 號
+              </p>
+              <MapEmbed className="w-full aspect-[16/10]" />
+            </div>
+            <div>
+              <SectionTitle>營業方式</SectionTitle>
+              <p className="text-[15px] leading-[1.7] text-on-surface">
+                預約制，請先私訊確認
+              </p>
+            </div>
+            <div>
+              <SectionTitle>追蹤我們</SectionTitle>
+              <div className="flex items-center gap-[18px] text-primary mt-1">
+                <SocialLinks showLine={false} />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Content：手機單欄，桌機在右半 */}
-      <div className="w-full lg:w-1/2 shrink-0 flex flex-col justify-between px-page py-14 lg:p-[5vw] lg:py-16 bg-background z-10 order-2">
-        <div className="z-10 relative max-w-xl">
-          {/* 編目元素：手機水平細線 + 編號 */}
-          <p className="flex items-center gap-3 font-label text-[11px] tracking-[0.1em] uppercase text-on-surface-variant mb-3">
-            <span className="h-px w-8 bg-outline-variant" />
-            01 / Brand Story
-          </p>
-          {/* Title */}
-          <h1 className="font-serif text-3xl md:text-4xl xl:text-5xl text-on-surface mb-8 tracking-widest">
-            品牌故事
-          </h1>
-
-          {/* Divider */}
-          <div className="w-20 h-px bg-ghost-line mb-10"></div>
-
-          {/* Quote section */}
-          <div className="mb-10">
-            <p className="font-serif text-xl lg:text-2xl text-on-surface/90 leading-loose tracking-wide border-l border-ghost-line pl-6 italic">
-              「源自對甜點的純粹熱愛,我們相信每一份甜點都是雲朵般的輕盈與溫柔。」
-            </p>
-          </div>
-
-          {/* Body text */}
-          <div className="space-y-6 text-on-surface-variant font-serif leading-[1.8] text-base lg:text-lg text-justify tracking-wide">
-            <p>
-              Taff 甜點工作室成立於 2022
-              年,座落於虎尾的靜謐角落。我們堅持選用最純淨的天然食材,摒棄繁複的化學添加,只為了還原食材本真的風味。
-            </p>
-            <p>
-              從麵粉的篩選到奶油的打發,每一個步驟都由職人雙手細心呵護。如同天空中的雲朵千變萬化,我們的甜點也致力於探索口感的無限可能,帶給您味蕾上最溫暖的擁抱。
-            </p>
-          </div>
-
-          {/* Brand signature */}
-          <div className="mt-12 flex items-center space-x-6">
-            <div className="flex flex-col">
-              <span className="font-serif italic text-2xl text-on-surface">
-                Taff Dessert
-              </span>
-              <span className="font-label text-[10px] tracking-[0.25em] uppercase text-primary mt-1">
-                Artisan Studio
-              </span>
-            </div>
-            <span className="h-px w-16 bg-ghost-line"></span>
-          </div>
+      {/* ── 桌機版 ─────────────────────────────────────────── */}
+      <div className="hidden lg:flex min-h-[calc(100vh-75px)]">
+        <div className="w-[44%] relative">
+          {imgSrc && (
+            <Image
+              alt="塔芙甜點工作室"
+              src={imgSrc}
+              fill
+              priority
+              sizes="44vw"
+              className="object-cover"
+            />
+          )}
         </div>
 
-        {/* 編目元素：桌機角落直排 */}
-        <div className="absolute bottom-12 right-12 font-label text-[10px] tracking-[0.3em] text-on-surface-variant/50 hidden lg:block text-vertical">
-          01 / BRAND STORY
+        <div className="w-[56%] px-[6vw] py-[72px]">
+          <h1 className="font-serif text-[44px] text-on-surface mb-1">
+            關於塔芙
+          </h1>
+          <p className="text-sm text-outline mb-[26px]">虎尾 · 2022 年至今</p>
+
+          <div className="flex flex-col gap-4 max-w-[520px] text-[17px] leading-[1.85] text-on-surface-variant">
+            {STORY.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </div>
+
+          <div className="mt-9 grid grid-cols-2 gap-7 max-w-[640px]">
+            <div>
+              <SectionTitle>服務項目</SectionTitle>
+              <p className="text-[15px] leading-[1.7] text-on-surface">
+                預約制甜點、婚禮喜餅、節慶禮盒、企業訂製、Candy Bar
+              </p>
+            </div>
+            <div>
+              <SectionTitle>營業方式</SectionTitle>
+              <p className="text-[15px] leading-[1.7] text-on-surface">
+                預約制，請先私訊確認
+              </p>
+            </div>
+            <div>
+              <SectionTitle>地址</SectionTitle>
+              <p className="text-[15px] leading-[1.7] text-on-surface">
+                雲林縣虎尾鎮林森路一段 157 巷 48 號
+              </p>
+            </div>
+            <div>
+              <SectionTitle>追蹤我們</SectionTitle>
+              <div className="flex items-center gap-4 text-primary mt-1">
+                <SocialLinks showLine={false} />
+              </div>
+            </div>
+          </div>
+
+          <MapEmbed className="mt-8 w-full max-w-[640px] aspect-[2/1]" />
         </div>
       </div>
     </main>

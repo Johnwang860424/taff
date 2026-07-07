@@ -99,3 +99,5 @@ export function useMenuItemSelection() {
     setSelectedCategory,
   };
 }
+
+export type MenuItemSelection = ReturnType<typeof useMenuItemSelection>;

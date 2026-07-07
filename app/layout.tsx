@@ -3,6 +3,7 @@ import { Libre_Caslon_Text, Work_Sans, Space_Grotesk, Noto_Serif_TC, Noto_Sans_T
 import './globals.css';
 import DecorativeCircle from '@/components/DecorativeCircle';
 import Navbar from '@/components/Navbar';
+import MobileTabBar from '@/components/MobileTabBar';
 import { CartProvider } from '@/context/CartContext';
 
 const libreCaslon = Libre_Caslon_Text({
@@ -28,7 +29,6 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 const notoSerifTC = Noto_Serif_TC({
-  subsets: ['latin'],
   weight: ['300', '400', '600'],
   variable: '--font-noto-serif',
   display: 'swap',
@@ -36,7 +36,6 @@ const notoSerifTC = Noto_Serif_TC({
 });
 
 const notoSansTC = Noto_Sans_TC({
-  subsets: ['latin'],
   weight: ['300', '400', '500'],
   variable: '--font-noto-sans',
   display: 'swap',
@@ -74,7 +73,12 @@ export default function RootLayout({
               <DecorativeCircle />
             </div>
 
-            <div>{children}</div>
+            {/* 手機底部 tab bar 佔位 */}
+            <div className="pb-[calc(64px+env(safe-area-inset-bottom))] md:pb-0">
+              {children}
+            </div>
+
+            <MobileTabBar />
           </div>
         </CartProvider>
       </body>

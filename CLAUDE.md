@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project overview
 
-Taff Dessert Studio — a Next.js 16 (App Router) storefront for a dessert brand: home/brand/contact pages, an online menu, and a cart/checkout flow. It deploys to Cloudflare Workers via OpenNext, and reads/writes all data through Cloudflare bindings (D1 + R2) rather than external SaaS. A separate admin project (`taff-backend`, not in this repo) manages products/inventory/site images in the same D1/R2 resources and calls this app's `/api/revalidate` endpoint to bust caches after edits.
+Taff Dessert Studio — a Next.js 16 (App Router) storefront for a dessert brand: a home page, an online menu, a cart/checkout flow, and a merged about page (brand story + contact info) at `/brand`. It deploys to Cloudflare Workers via OpenNext, and reads/writes all data through Cloudflare bindings (D1 + R2) rather than external SaaS. A separate admin project (`taff-backend`, not in this repo) manages products/inventory/site images in the same D1/R2 resources and calls this app's `/api/revalidate` endpoint to bust caches after edits.
 
 The Chinese README describes an earlier Google Sheets + Cloudinary architecture — that has been fully replaced by D1/R2 (see "Data architecture" below); treat the README's data-flow section as stale.
 
@@ -46,7 +46,7 @@ Two other R2/D1-backed pieces:
 ### Image serving (`app/api/images/[...key]/route.ts`, `lib/site-images.ts`)
 
 - All images (product photos, fixed site images for home/brand-story/contact) live in the `IMAGES_BUCKET` R2 bucket and are served through this app's own `/api/images/[...key]` route (ETag + 1-day cache), not a CDN.
-- `getSiteImageUrl(key)` in `lib/site-images.ts` looks up one of three fixed R2 keys (`site/home`, `site/brand-story`, `site/contact`) and appends `?v=<uploadedTimestamp>` for cache-busting — if nothing has been uploaded yet it returns `""`.
+- `getSiteImageUrl(key)` in `lib/site-images.ts` looks up one of three fixed R2 keys (`site/home`, `site/brand-story`, `site/contact`) and appends `?v=<uploadedTimestamp>` for cache-busting — if nothing has been uploaded yet it returns `""`. The `site/contact` key is currently unused (the contact page was merged into `/brand`) but is kept because the admin backend can still upload to it.
 
 ### Order submission (`app/api/order/route.ts`, `lib/order/*`)
 
@@ -66,9 +66,25 @@ Client-side, `hooks/useOrderForm.ts` runs a social-account existence check (`GET
 
 `POST /api/revalidate` (Bearer-style `Authorization` header checked against `ADMIN_SECRET_TOKEN`) calls `revalidateTag(tag, "max")`. This is the only invalidation path for the `"menu"` tag — there is no time-based revalidation for product/variant data. The admin backend is expected to call this after any product/variant mutation.
 
-### Routing
+### Routing & app shell
 
-`/` home, `/brand`, `/menu`, `/cart`, `/contact` — each page under `app/` is a thin wrapper that renders the corresponding component from `components/{home,brand,contact,menu,cart}/`. Menu and cart UI are split into `Desktop`/`Mobile` variant components rather than one responsive component (see `components/menu/MenuDesktop.tsx` / `MenuMobile.tsx`).
+`/` home, `/menu`, `/brand` (關於塔芙 — merged brand story + contact info), `/cart` — each page under `app/` is a thin wrapper that renders the corresponding component from `components/{home,brand,menu,cart}/` (cart renders inline in `app/cart/page.tsx`). There is no `/contact` route anymore; the former contact page's content lives on `/brand`.
+
+Navigation is rendered by two components in `app/layout.tsx`, switching at the `md` breakpoint:
+- `components/Navbar.tsx` — one sticky `top-0` block containing the mobile top bar (h-14, brand identity only) and the desktop nav (links from `constants/menu.ts` + cart icon with badge).
+- `components/MobileTabBar.tsx` — fixed bottom tab bar (`md:hidden`, h-16 + `env(safe-area-inset-bottom)`), tabs 首頁/菜單/購物車/我們.
+
+Bottom-bar geometry is a contract shared across files: the layout wraps children in `pb-[calc(64px+env(safe-area-inset-bottom))] md:pb-0`, the cart submit bar sticks at `bottom-[calc(64px+env(safe-area-inset-bottom))]`, and the mobile menu category pills stick at `top-14` (below the h-14 header). Change one and you must change them together. Avoid `min-h-screen` on page `<main>`s — combined with the header/tab-bar space it makes even empty pages scroll.
+
+Menu UI is split into `Desktop`/`Mobile` variant components rather than one responsive component (`components/menu/MenuDesktop.tsx` / `MenuMobile.tsx`, switched at `md` in `app/menu/page.tsx`); home and brand instead switch layouts internally at `lg`.
+
+### Add-to-cart UI (shared)
+
+The order-selection flow (pick flavor → pick pickup date → add) lives in `hooks/useMenuItemSelection.ts` and is rendered by shared shells: `components/menu/AddToCartSheet.tsx` (mobile bottom sheet, swipe-to-close) and `AddToCartDialog.tsx` (desktop centered modal), both wrapping `AddToCartModalContent`. The menu pages and the home 本週推薦 section (`components/home/FeaturedSection.tsx`) all reuse these — change the flow there, not per-page.
+
+### Design system
+
+Visual tokens (palette, fonts, `--radius-soft`, `--spacing-page`) are defined in `app/globals.css` `@theme` and documented in `DESIGN.md` (kept in sync with the implementation — update it when tokens or component conventions change). Icons are hairline (strokeWidth ~1.2–1.6); borders use `ghost-line` instead of shadows (the desktop add-to-cart dialog is the one sanctioned shadow).
 
 ### Deployment
 
@@ -77,3 +93,5 @@ Deploys as a Cloudflare Worker via `@opennextjs/cloudflare` (not Vercel). `wrang
 ## Spec workflow (OpenSpec)
 
 This repo uses OpenSpec (`openspec/`) for spec-driven change proposals: `openspec/specs/*/spec.md` holds current-state specs (e.g. `cart-context`, `cart-item-flavor-pickup`, `menu-flavor-schedule`), and `openspec/changes/` holds proposed/archived change packages. If asked to plan a non-trivial feature, check `openspec/specs/` first for the relevant existing spec before proposing changes to that behavior.
+
+Caveat: the `design-system` and `mobile-first-layout` specs predate the July 2026 redesign (they describe the old hamburger sidebar, editorial page numbers, and hover-list menu) — where they conflict with the code or `DESIGN.md`, the code/`DESIGN.md` is authoritative.
