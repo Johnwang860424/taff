@@ -7,7 +7,7 @@ const SocialLinks = ({ showLine = true }: { showLine?: boolean }) => {
         </svg>
       </a>
       
-      {showLine && <span className="h-px w-10 bg-primary/20 origin-left line-animation"></span>}
+      {showLine && <span className="h-px w-10 bg-outline-variant origin-left line-animation"></span>}
       
       <a href="https://www.facebook.com/p/%E5%A1%94%E8%8A%99-TAFF-100083549960649/" target="_blank" rel="noreferrer" className="hover:text-primary transition-all duration-300 hover:scale-110" aria-label="Facebook">
         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -15,7 +15,7 @@ const SocialLinks = ({ showLine = true }: { showLine?: boolean }) => {
         </svg>
       </a>
       
-      {showLine && <span className="h-px w-10 bg-primary/20 origin-left line-animation"></span>}
+      {showLine && <span className="h-px w-10 bg-outline-variant origin-left line-animation"></span>}
       
       <a href="https://linktr.ee/taff_dessert" target="_blank" rel="noreferrer" className="hover:text-primary transition-all duration-300 hover:scale-110" aria-label="Linktree">
         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

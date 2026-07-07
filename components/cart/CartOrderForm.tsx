@@ -55,9 +55,9 @@ const FormField = ({
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) => (
   <div className="flex flex-col gap-2">
-    <label className="text-xs md:text-sm tracking-[0.2em] uppercase text-gray-500 font-sans">
+    <label className="font-label text-[11px] tracking-[0.1em] uppercase text-on-surface-variant">
       {field.label}{" "}
-      {field.required && <span className="text-red-400">*</span>}
+      {field.required && <span className="text-error">*</span>}
     </label>
     <input
       type={field.type}
@@ -66,11 +66,11 @@ const FormField = ({
       onChange={onChange}
       placeholder={field.placeholder}
       className={`border-b ${
-        error ? "border-red-400" : "border-gray-300"
-      } bg-transparent py-3 outline-none focus:border-accent-gold transition-colors text-base md:text-lg font-sans text-gray-800 placeholder:text-gray-400`}
+        error ? "border-error/60" : "border-ghost-line"
+      } bg-transparent py-3 outline-none focus:border-primary transition-colors text-base font-sans text-on-surface placeholder:text-on-surface-variant/50`}
     />
     {error && (
-      <p className="text-xs md:text-sm text-red-400 font-sans">{error}</p>
+      <p className="text-xs md:text-sm text-error font-sans">{error}</p>
     )}
   </div>
 );
@@ -101,9 +101,9 @@ const CartOrderForm = ({
 
   return (
     <section>
-      <h2 className="font-serif text-2xl md:text-3xl text-primary mb-6 pb-2 border-b border-accent-gold inline-block pr-8">
+      <h2 className="font-serif text-2xl md:text-3xl text-on-surface mb-6 pb-2 border-b border-ghost-line inline-block pr-8">
         {deliveryMethod === "pickup" ? "取件資訊" : "收件資訊"}
-        <span className="text-xs font-sans tracking-[0.15em] text-accent-gold uppercase ml-2">
+        <span className="font-label text-xs tracking-[0.15em] text-on-surface-variant uppercase ml-2">
           {deliveryMethod === "pickup"
             ? "Pickup Information"
             : "Shipping Information"}
@@ -127,8 +127,8 @@ const CartOrderForm = ({
 
         {/* 社群帳號 */}
         <div className="flex flex-col gap-2">
-          <label className="text-xs md:text-sm tracking-[0.2em] uppercase text-gray-500 font-sans">
-            社群帳號 <span className="text-red-400">*</span>
+          <label className="font-label text-[11px] tracking-[0.1em] uppercase text-on-surface-variant">
+            社群帳號 <span className="text-error">*</span>
           </label>
           <div className="flex gap-3 items-end">
             <SocialPlatformSelect
@@ -151,12 +151,12 @@ const CartOrderForm = ({
                   : "帳號或網址，例：john.doe"
               }
               className={`flex-1 border-b ${
-                socialHasError ? "border-red-400" : "border-gray-300"
-              } bg-transparent py-3 outline-none focus:border-accent-gold transition-colors text-base md:text-lg font-sans text-gray-800 placeholder:text-gray-400`}
+                socialHasError ? "border-error/60" : "border-ghost-line"
+              } bg-transparent py-3 outline-none focus:border-primary transition-colors text-base font-sans text-on-surface placeholder:text-on-surface-variant/50`}
             />
           </div>
           {socialHasError && (
-            <p className="text-xs md:text-sm text-red-400 font-sans">
+            <p className="text-xs md:text-sm text-error font-sans">
               {errors.socialPlatform ?? errors.socialUsername}
             </p>
           )}
@@ -178,7 +178,7 @@ const CartOrderForm = ({
 
         {/* 備註 */}
         <div className="flex flex-col gap-2">
-          <label className="text-xs md:text-sm tracking-[0.2em] uppercase text-gray-500 font-sans">
+          <label className="font-label text-[11px] tracking-[0.1em] uppercase text-on-surface-variant">
             備註
           </label>
           <textarea
@@ -186,19 +186,19 @@ const CartOrderForm = ({
             rows={3}
             value={form.note}
             onChange={handleChange}
-            className="border-b border-gray-300 bg-transparent py-3 outline-none focus:border-accent-gold transition-colors text-base md:text-lg font-sans text-gray-800 resize-none placeholder:text-gray-400"
+            className="border-b border-ghost-line bg-transparent py-3 outline-none focus:border-primary transition-colors text-base font-sans text-on-surface resize-none placeholder:text-on-surface-variant/50"
             placeholder="口味偏好、取貨時間等..."
           />
         </div>
 
         {/* 送出錯誤 */}
         {submitError && (
-          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 flex flex-col gap-1">
-            <p className="text-xs font-sans tracking-[0.15em] uppercase text-red-500 mb-1">
+          <div className="rounded-soft border border-error/30 bg-error/5 px-4 py-3 flex flex-col gap-1">
+            <p className="font-label text-xs tracking-[0.1em] uppercase text-error mb-1">
               {submitError.title}
             </p>
             {submitError.items.map((msg, i) => (
-              <p key={i} className="text-sm font-sans text-red-600">
+              <p key={i} className="text-sm font-sans text-error">
                 {msg}
               </p>
             ))}
@@ -208,7 +208,7 @@ const CartOrderForm = ({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="mt-4 bg-accent-gold text-white rounded-xl shadow-md py-4 tracking-[0.25em] text-xs uppercase font-sans hover:bg-accent-gold/80 hover:shadow-lg active:scale-[0.99] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="mt-4 bg-primary text-on-primary rounded-soft py-4 tracking-[0.25em] text-xs uppercase font-sans hover:bg-primary/90 active:scale-[0.99] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {buttonLabel}
         </button>

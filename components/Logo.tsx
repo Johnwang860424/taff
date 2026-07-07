@@ -1,13 +1,21 @@
-const Logo = ({ size = 50 }) => {
+const Logo = ({
+  size = 50,
+  className = "",
+  filled = false,
+}: {
+  size?: number;
+  className?: string;
+  filled?: boolean;
+}) => {
   return (
     <svg
       width={size}
       height={size}
       viewBox="0 0 500 500"
-      fill="none"
+      fill={filled ? "currentColor" : "none"}
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
-      className="select-none cloud-path"
+      className={`select-none ${filled ? "cloud-path-filled" : "cloud-path"} ${className}`}
     >
       <path
         d="M182.401794,306.807617
@@ -59,10 +67,11 @@ const Logo = ({ size = 50 }) => {
           C172.165039,289.596497 182.005630,294.208221 192.704788,296.537445
           C208.022827,299.872223 223.509552,296.867859 239.834457,295.961090
           Z"
+        fillRule={filled ? "evenodd" : undefined}
         stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
-        strokeWidth="13"
+        strokeWidth="10"
       />
     </svg>
   );

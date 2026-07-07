@@ -33,17 +33,17 @@ const FlavorPicker = ({
         <button
           key={flavor}
           onClick={() => onSelect(flavor)}
-          className={`px-4 py-2 rounded-lg border text-sm font-sans transition-colors ${
+          className={`px-4 py-2 rounded-soft border text-sm font-sans transition-colors ${
             selected === flavor
-              ? "border-primary bg-primary text-white"
-              : "border-black/30 text-primary hover:border-black/60"
+              ? "border-primary bg-primary text-on-primary"
+              : "border-outline-variant text-on-surface hover:border-primary"
           }`}
         >
           {flavor}
         </button>
       ))
     ) : (
-      <p className="text-sm text-gray-400 font-sans">此商品尚未設定口味</p>
+      <p className="text-sm text-on-surface-variant/70 font-sans">此商品尚未設定口味</p>
     )}
   </div>
 );
@@ -61,23 +61,23 @@ const DatePicker = ({
 }) => (
   <div className="flex flex-wrap gap-2">
     {!selectedFlavor ? (
-      <p className="text-sm text-gray-400 font-sans">請先選擇口味</p>
+      <p className="text-sm text-on-surface-variant/70 font-sans">請先選擇口味</p>
     ) : dates.length > 0 ? (
       dates.map((date) => (
         <button
           key={date}
           onClick={() => onSelect(date)}
-          className={`px-4 py-2 rounded-lg border text-sm font-sans transition-colors ${
+          className={`px-4 py-2 rounded-soft border text-sm font-label tracking-[0.05em] transition-colors ${
             selectedDate === date
-              ? "border-primary bg-primary text-white"
-              : "border-black/30 text-primary hover:border-black/60"
+              ? "border-primary bg-primary text-on-primary"
+              : "border-outline-variant text-on-surface hover:border-primary"
           }`}
         >
           {date}
         </button>
       ))
     ) : (
-      <p className="text-sm text-gray-400 font-sans">
+      <p className="text-sm text-on-surface-variant/70 font-sans">
         此口味目前無可取貨日期
       </p>
     )}
@@ -95,20 +95,20 @@ const ModalHeader = ({
 }) => (
   <div className="flex items-start justify-between gap-4">
     <div>
-      <p className="text-xs tracking-[0.2em] uppercase text-accent-gold font-sans mb-2">
+      <p className="font-label text-[11px] tracking-[0.1em] uppercase text-on-surface-variant mb-2">
         Add To Cart
       </p>
-      <h3 className="font-serif text-3xl text-primary">{item.name}</h3>
-      <p className="font-sans text-sm text-gray-500 mt-2">
+      <h3 className="font-serif text-3xl text-on-surface">{item.name}</h3>
+      <p className="font-label text-sm tracking-[0.1em] text-primary mt-2">
         {currentPrice !== null ? `$ ${currentPrice}` : getPriceDisplay(item)}
       </p>
     </div>
     <button
       onClick={onClose}
-      className="h-9 w-9 rounded-full border border-black/15 flex items-center justify-center text-gray-500 hover:text-primary hover:border-black/30 transition-colors"
+      className="h-9 w-9 rounded-soft border border-ghost-line flex items-center justify-center text-on-surface-variant hover:text-primary hover:border-outline transition-colors"
       aria-label="關閉視窗"
     >
-      <X size={18} />
+      <X size={18} strokeWidth={1} />
     </button>
   </div>
 );
@@ -132,7 +132,7 @@ export const AddToCartModalContent = ({
       <ModalHeader item={item} currentPrice={currentPrice} onClose={onClose} />
 
       <div className="mt-7">
-        <p className="text-sm font-sans tracking-[0.15em] text-gray-700 mb-3">
+        <p className="font-label text-xs tracking-[0.1em] uppercase text-on-surface-variant mb-3">
           口味
         </p>
         <FlavorPicker
@@ -143,7 +143,7 @@ export const AddToCartModalContent = ({
       </div>
 
       <div className="mt-6">
-        <p className="text-sm font-sans tracking-[0.15em] text-gray-700 mb-3">
+        <p className="font-label text-xs tracking-[0.1em] uppercase text-on-surface-variant mb-3">
           取貨日期
         </p>
         <DatePicker

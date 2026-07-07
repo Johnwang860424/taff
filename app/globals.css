@@ -1,12 +1,29 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #2C2C2C;
-  --color-background-light: #EEECE1;
-  --color-accent-gold: #C6A87C;
+    /* DESIGN.md 色彩 tokens（僅落地實際使用的子集） */
+    --color-primary: #C6A87C;
+    --color-on-primary: #ffffff;
+    --color-background: #EEECE1;
+    --color-surface-container: #f0eded;
+    --color-on-surface: #1b1c1c;
+    --color-on-surface-variant: #4e453e;
+    --color-outline: #80756d;
+    --color-outline-variant: #d1c4ba;
+    --color-ghost-line: #e0ddd5;
+    --color-primary-fixed: #f9dec6;
+    --color-error: #ba1a1a;
 
-  --font-serif: var(--font-cormorant), var(--font-noto-serif), serif;
-  --font-sans: var(--font-montserrat), var(--font-noto-sans), sans-serif;
+    /* 字體：標題襯線 / 內文無襯線 / 編號標籤 */
+    --font-serif: var(--font-caslon), var(--font-noto-serif), serif;
+    --font-sans: var(--font-work-sans), var(--font-noto-sans), sans-serif;
+    --font-label: var(--font-space-grotesk), var(--font-noto-sans), monospace;
+
+    /* Soft 圓角（DESIGN.md：容器與按鈕 4px） */
+    --radius-soft: 4px;
+
+    /* 頁邊距 token（margin-page: 5vw）→ px-page / p-page */
+    --spacing-page: 5vw;
 }
 
 @keyframes draw {
@@ -25,10 +42,27 @@
     }
 }
 
+@keyframes fillFadeIn {
+    0%, 60% {
+        fill-opacity: 0;
+    }
+    100% {
+        fill-opacity: 1;
+    }
+}
+
 .cloud-path {
     stroke-dasharray: 1000;
     stroke-dashoffset: 1000;
     animation: draw 2s ease-out forwards;
+}
+
+.cloud-path-filled {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: 
+        draw 2s ease-out forwards,
+        fillFadeIn 2.5s ease-out forwards;
 }
 
 .line-animation {
@@ -37,6 +71,7 @@
 
 body {
     cursor: default;
+    line-height: 1.6;
 }
 
 .text-vertical {

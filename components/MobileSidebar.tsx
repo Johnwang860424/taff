@@ -15,17 +15,18 @@ const MobileSidebar = ({ open, setOpen }: { open: boolean; setOpen: (open: boole
         ${open ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"}
       `}
     >
-      <div className="relative w-full h-full bg-background-light shadow-xl flex flex-col ">
+      <div className="relative w-full h-full bg-background flex flex-col">
         <div className="flex justify-between items-center p-6">
-          <Link href="/" onClick={() => setOpen(false)} className="flex items-center text-primary/75">
-            <Logo size={50}/>
+          <Link href="/" onClick={() => setOpen(false)} className="flex items-center text-primary">
+            <Logo size={50} filled={true} />
           </Link>
 
           <button
             onClick={() => setOpen(false)}
-            className="text-primary/75 hover:bg-gray-100 transition-all p-2.5 rounded-full group flex items-center justify-center"
+            className="text-primary hover:opacity-70 transition-all p-2.5 group flex items-center justify-center"
+            aria-label="關閉選單"
           >
-            <X className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" />
+            <X strokeWidth={1} className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" />
           </button>
         </div>
 
@@ -35,15 +36,15 @@ const MobileSidebar = ({ open, setOpen }: { open: boolean; setOpen: (open: boole
               key={item.href}
               href={item.href}
               onClick={() => setOpen(false)}
-              className="group flex flex-col items-center text-center transition-all duration-300 hover:scale-105"
+              className="group flex flex-col items-center text-center transition-colors duration-300"
             >
-              <span className="text-3xl font-serif text-primary mb-1 group-hover:text-primary/80 transition-colors">{item.zh}</span>
-              <span className="text-[10px] tracking-[0.3em] uppercase text-gray-400 font-sans group-hover:text-gray-500 transition-colors">{item.en}</span>
+              <span className="text-3xl font-serif text-on-surface mb-1 group-hover:text-primary transition-colors">{item.zh}</span>
+              <span className="font-label text-[10px] tracking-[0.3em] uppercase text-on-surface-variant/70 group-hover:text-on-surface-variant transition-colors">{item.en}</span>
             </Link>
           ))}
         </nav>
 
-        <div className="flex items-center justify-center space-x-6 text-primary/50 mb-8">
+        <div className="flex items-center justify-center space-x-6 text-primary/60 mb-8">
           <SocialLinks/>
         </div>
       </div>

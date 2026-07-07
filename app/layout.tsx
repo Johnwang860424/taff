@@ -1,22 +1,29 @@
 import type { Metadata } from 'next';
-import { Cormorant_Garamond, Montserrat, Noto_Serif_TC, Noto_Sans_TC } from 'next/font/google';
+import { Libre_Caslon_Text, Work_Sans, Space_Grotesk, Noto_Serif_TC, Noto_Sans_TC } from 'next/font/google';
 import './globals.css';
 import DecorativeCircle from '@/components/DecorativeCircle';
 import Navbar from '@/components/Navbar';
 import { CartProvider } from '@/context/CartContext';
 
-const cormorantGaramond = Cormorant_Garamond({
+const libreCaslon = Libre_Caslon_Text({
   subsets: ['latin'],
-  variable: '--font-cormorant',
-  weight: ['300', '400', '600'],
+  variable: '--font-caslon',
+  weight: ['400', '700'],
   style: ['normal', 'italic'],
   display: 'swap',
 });
 
-const montserrat = Montserrat({
+const workSans = Work_Sans({
   subsets: ['latin'],
-  variable: '--font-montserrat',
+  variable: '--font-work-sans',
   weight: ['300', '400', '500'],
+  display: 'swap',
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-space-grotesk',
+  weight: ['500'],
   display: 'swap',
 });
 
@@ -56,14 +63,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="zh-TW" className={`${cormorantGaramond.variable} ${montserrat.variable} ${notoSerifTC.variable} ${notoSansTC.variable}`}>
-      <body className="bg-background-light text-primary antialiased overflow-x-hidden font-sans selection:bg-accent-gold/30">
+    <html lang="zh-TW" className={`${libreCaslon.variable} ${workSans.variable} ${spaceGrotesk.variable} ${notoSerifTC.variable} ${notoSansTC.variable}`}>
+      <body className="bg-background text-on-surface antialiased overflow-x-hidden font-sans selection:bg-primary-fixed">
         <CartProvider>
           <div className="relative min-h-screen">
             <Navbar />
 
-            {/* Decorative central element that bridges both halves */}
-            <div className="fixed inset-0 pointer-events-none flex items-center justify-center z-20 overflow-hidden">
+            {/* 雲朵浮水印：固定底紋，不干擾前景互動 */}
+            <div className="fixed inset-0 pointer-events-none flex items-center justify-center z-20 overflow-hidden" aria-hidden>
               <DecorativeCircle />
             </div>
 

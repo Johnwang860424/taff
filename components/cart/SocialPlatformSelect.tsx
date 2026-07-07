@@ -15,12 +15,12 @@ const PLATFORMS = [
   {
     value: "instagram" as const,
     label: "Instagram",
-    icon: <Instagram size={14} className="text-pink-500" />,
+    icon: <Instagram size={14} strokeWidth={1.25} className="text-on-surface-variant" />,
   },
   {
     value: "facebook" as const,
     label: "Facebook",
-    icon: <Facebook size={14} className="text-blue-500" />,
+    icon: <Facebook size={14} strokeWidth={1.25} className="text-on-surface-variant" />,
   },
 ];
 
@@ -45,8 +45,8 @@ const SocialPlatformSelect = ({ value, onChange, hasError }: Props) => {
         type="button"
         onClick={() => setIsOpen((o) => !o)}
         className={`w-full flex items-center justify-between gap-2 border-b ${
-          hasError ? "border-red-400" : "border-gray-300"
-        } py-3 text-base font-sans text-gray-800 focus:outline-none focus:border-accent-gold transition-colors`}
+          hasError ? "border-error/60" : "border-ghost-line"
+        } py-3 text-base font-sans text-on-surface focus:outline-none focus:border-primary transition-colors`}
       >
         <span className="flex items-center gap-2">
           {current.icon}
@@ -54,14 +54,15 @@ const SocialPlatformSelect = ({ value, onChange, hasError }: Props) => {
         </span>
         <ChevronDown
           size={14}
-          className={`text-gray-400 transition-transform duration-200 ${
+          strokeWidth={1.25}
+          className={`text-on-surface-variant/60 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
           }`}
         />
       </button>
 
       {isOpen && (
-        <div className="absolute top-[calc(100%+4px)] left-0 z-20 w-full bg-white rounded-xl border border-gray-100 shadow-lg overflow-hidden">
+        <div className="absolute top-[calc(100%+4px)] left-0 z-20 w-full bg-background rounded-soft border border-ghost-line shadow-sm overflow-hidden">
           {PLATFORMS.map((platform) => (
             <button
               key={platform.value}
@@ -72,14 +73,14 @@ const SocialPlatformSelect = ({ value, onChange, hasError }: Props) => {
               }}
               className={`w-full flex items-center gap-2.5 px-4 py-3 text-sm font-sans transition-colors ${
                 value === platform.value
-                  ? "bg-accent-gold/5 text-accent-gold"
-                  : "text-gray-600 hover:bg-gray-50"
+                  ? "bg-primary-fixed/40 text-primary"
+                  : "text-on-surface-variant hover:bg-surface-container"
               }`}
             >
               {platform.icon}
               {platform.label}
               {value === platform.value && (
-                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-accent-gold" />
+                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-primary" />
               )}
             </button>
           ))}

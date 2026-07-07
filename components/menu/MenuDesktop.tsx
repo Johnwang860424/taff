@@ -40,8 +40,8 @@ const MenuDesktop = ({ data }: { data: MenuData }) => {
   return (
     <main className="flex flex-col md:flex-row h-screen w-full relative">
       {/* Left Section - Image */}
-      <div className="w-full md:w-1/2 shrink-0 min-h-[50vh] relative overflow-hidden order-1 group">
-        <div className="absolute inset-0 bg-stone-900/10 transition-opacity duration-700 group-hover:bg-stone-900/0 z-10" />
+      <div className="w-full md:w-1/2 shrink-0 min-h-[48vh] relative overflow-hidden order-1 group">
+        <div className="absolute inset-0 bg-on-surface/10 transition-opacity duration-700 group-hover:bg-on-surface/0 z-10" />
         {currentItem && (
           <Image
             key={currentItem.img}
@@ -58,20 +58,20 @@ const MenuDesktop = ({ data }: { data: MenuData }) => {
             onClick={() =>
               openModal(currentItem, activeCategory)
             }
-            className={`text-white text-xs px-4 py-2 rounded-xl shadow-md transition-all duration-300 flex items-center gap-2 shrink-0 ${
+            className={`text-sm px-5 py-2.5 rounded-soft transition-colors duration-300 flex items-center gap-2 shrink-0 ${
               isAdded
-                ? "bg-green-500 hover:bg-green-500 scale-105"
-                : "bg-accent-gold hover:bg-accent-gold/80 hover:scale-110 hover:shadow-lg active:scale-95"
+                ? "bg-primary-fixed text-primary"
+                : "bg-primary text-on-primary hover:bg-primary/90 active:scale-95"
             }`}
           >
             {isAdded ? (
               <>
-                <Check size={16} />
+                <Check size={16} strokeWidth={1.25} />
                 已加入購物車
               </>
             ) : (
               <>
-                <ShoppingCart size={16} />
+                <ShoppingCart size={16} strokeWidth={1.25} />
                 加入購物車
               </>
             )}
@@ -80,12 +80,13 @@ const MenuDesktop = ({ data }: { data: MenuData }) => {
       </div>
 
       {/* Right Section */}
-      <div className="w-full md:w-1/2 shrink-0 flex flex-col justify-between p-8 md:p-24 md:py-16 bg-background-light z-10 order-2">
-        <div className="flex flex-col items-start mb-6 md:mb-6 z-10 shrink-0">
-          <p className="text-sm tracking-[0.2em] uppercase text-accent-gold font-sans mb-3">
-            Seasonal Selection
+      <div className="w-full md:w-1/2 shrink-0 flex flex-col justify-between px-page py-14 lg:p-[5vw] lg:py-16 bg-background z-10 order-2">
+        <div className="flex flex-col items-start mb-6 z-10 shrink-0">
+          <p className="flex items-center gap-3 font-label text-[11px] tracking-[0.1em] uppercase text-on-surface-variant mb-3">
+            <span className="h-px w-8 bg-outline-variant" />
+            03 / Seasonal Selection
           </p>
-          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-primary tracking-widest font-light">
+          <h1 className="font-serif text-3xl md:text-4xl xl:text-5xl text-on-surface tracking-widest">
             季節嚴選
           </h1>
         </div>
@@ -111,8 +112,9 @@ const MenuDesktop = ({ data }: { data: MenuData }) => {
           />
         </div>
 
-        <div className="absolute bottom-8 right-8 md:bottom-12 md:right-12 text-[10px] tracking-[0.3em] text-primary/30 font-sans hidden md:block text-vertical">
-          SEASONAL SELECTION — 03
+        {/* 編目元素：桌機角落直排 */}
+        <div className="absolute bottom-12 right-12 font-label text-[10px] tracking-[0.3em] text-on-surface-variant/50 hidden lg:block text-vertical">
+          03 / SEASONAL SELECTION
         </div>
       </div>
 
@@ -126,7 +128,7 @@ const MenuDesktop = ({ data }: { data: MenuData }) => {
         onClick={closeModal}
       >
         <div
-          className={`w-full max-w-xl rounded-2xl bg-white shadow-2xl border border-black/10 p-6 md:p-8 transition-all duration-200 ${
+          className={`w-full max-w-xl rounded-soft bg-background border border-ghost-line p-6 md:p-8 transition-all duration-200 ${
             isModalOpen
               ? "opacity-100 scale-100 translate-y-0"
               : "opacity-0 scale-95 translate-y-2"
@@ -149,14 +151,14 @@ const MenuDesktop = ({ data }: { data: MenuData }) => {
           <div className="mt-8 flex justify-end gap-3">
             <button
               onClick={closeModal}
-              className="px-5 py-2.5 rounded-xl border border-black/20 text-primary font-sans text-sm hover:bg-gray-50 transition-colors"
+              className="px-5 py-2.5 rounded-soft border border-outline bg-transparent text-primary font-sans text-sm hover:bg-surface-container transition-colors"
             >
               取消
             </button>
             <button
               onClick={handleConfirm}
               disabled={!selectedFlavor || !selectedPickupDate}
-              className="px-5 py-2.5 rounded-xl bg-accent-gold text-white font-sans text-sm hover:bg-accent-gold/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-5 py-2.5 rounded-soft bg-primary text-on-primary font-sans text-sm hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               確認加入
             </button>
@@ -187,26 +189,31 @@ const MenuCategorySection = ({
   onHover: (item: MenuItem, category: keyof MenuData) => void;
 }) => (
   <section>
-    <h2 className="font-serif text-2xl md:text-3xl text-primary mb-6 pb-2 border-b border-accent-gold inline-block pr-8">
+    <h2 className="font-serif text-2xl md:text-3xl text-on-surface mb-6 pb-2 border-b border-ghost-line inline-block pr-8">
       {title}
-      <span className="text-xs font-sans tracking-[0.15em] text-accent-gold uppercase ml-2">
+      <span className="font-label text-xs tracking-[0.15em] text-on-surface-variant uppercase ml-2">
         {subtitle}
       </span>
     </h2>
     <ul className="space-y-4">
-      {items.map((item) => (
+      {items.map((item, index) => (
         <li
           key={item.name}
           className={`group flex justify-between items-baseline text-lg md:text-xl font-light transition-colors cursor-pointer ${
             currentItem?.name === item.name && activeCategory === categoryKey
-              ? "text-accent-gold"
-              : "text-gray-800 hover:text-accent-gold"
+              ? "text-primary"
+              : "text-on-surface hover:text-primary"
           }`}
           onMouseEnter={() => onHover(item, categoryKey)}
           onClick={() => onHover(item, categoryKey)}
         >
-          <span className="font-serif">{item.name}</span>
-          <span className="text-base font-sans text-gray-500 group-hover:text-accent-gold/80 transition-colors">
+          <span className="flex items-baseline gap-3">
+            <span className="font-label text-xs tracking-[0.1em] text-on-surface-variant/70">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <span className="font-serif">{item.name}</span>
+          </span>
+          <span className="font-label text-sm tracking-[0.1em] text-on-surface-variant group-hover:text-primary/80 transition-colors">
             {getPriceDisplay(item)}
           </span>
         </li>

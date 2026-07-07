@@ -16,7 +16,7 @@ colors:
   outline: '#80756d'
   outline-variant: '#d1c4ba'
   surface-tint: '#6f5b48'
-  primary: '#6c5846'
+  primary: '#C6A87C'
   on-primary: '#ffffff'
   primary-container: '#86715d'
   on-primary-container: '#fffbff'
@@ -45,7 +45,7 @@ colors:
   tertiary-fixed-dim: '#c9c6bf'
   on-tertiary-fixed: '#1c1c17'
   on-tertiary-fixed-variant: '#484741'
-  background: '#fbf9f8'
+  background: '#EEECE1'
   on-background: '#1b1c1c'
   surface-variant: '#e4e2e1'
 typography:
